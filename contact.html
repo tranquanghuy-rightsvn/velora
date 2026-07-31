@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>문의하기 — Velora Jewelry</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300;400;500;600&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="inner-page">
+
+  <nav class="breadcrumb">
+    <a href="index.html">홈</a>
+    <span class="breadcrumb__sep">/</span>
+    <span>문의하기</span>
+  </nav>
+
+  <div class="contact-layout">
+    <div class="contact-info">
+      <h1 class="contact-info__title">문의하기</h1>
+      <p class="contact-info__desc">궁금한 점이 있으시거나 도움이 필요하시면 언제든지 연락해 주세요. 최대한 빠르게 답변 드리겠습니다.</p>
+
+      <div class="contact-block">
+        <div class="contact-block__label">전화</div>
+        <div class="contact-block__value">001 (2) 3456 789</div>
+      </div>
+      <div class="contact-block">
+        <div class="contact-block__label">이메일</div>
+        <div class="contact-block__value">
+          <a href="mailto:info@example.com">info@example.com</a>
+        </div>
+      </div>
+      <div class="contact-block">
+        <div class="contact-block__label">운영 시간</div>
+        <div class="contact-block__value">
+          월 – 목: 08:45 – 17:30<br/>
+          금: 08:45 – 17:00<br/>
+          토 – 일: 휴무
+        </div>
+      </div>
+      <div class="contact-block">
+        <div class="contact-block__label">주소</div>
+        <div class="contact-block__value">
+          Premium Ltd.<br/>
+          123 Fake St.<br/>
+          Toronto, ON, M1S 1A1<br/>
+          Canada
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-form">
+      <h2 class="contact-form__title">메시지 보내기</h2>
+      <form onsubmit="return false;">
+        <div class="form-field">
+          <label for="contact-name">이름</label>
+          <input type="text" id="contact-name" placeholder="홍길동" />
+        </div>
+        <div class="form-field">
+          <label for="contact-email">이메일</label>
+          <input type="email" id="contact-email" placeholder="your@email.com" />
+        </div>
+        <div class="form-field">
+          <label for="contact-phone">전화번호</label>
+          <input type="tel" id="contact-phone" placeholder="010-0000-0000" />
+        </div>
+        <div class="form-field">
+          <label for="contact-message">메시지</label>
+          <textarea id="contact-message" placeholder="문의 내용을 입력해 주세요..."></textarea>
+        </div>
+        <button type="submit" class="form-submit">보내기</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="shared.js"></script>
+</body>
+</html>
