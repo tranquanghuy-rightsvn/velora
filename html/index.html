@@ -14,6 +14,7 @@
 </head>
 
 <body>
+  <a href="#main-content" class="skip-link">본문 바로가기</a>
 
   <!-- Announcement Bar -->
   <div class="announcement-bar" id="announcementBar">
@@ -81,8 +82,6 @@
     <nav class="header__nav" id="headerNav">
       <ul class="nav__list">
         <li><a href="products.html" class="nav__link">전체 상품</a></li>
-        <li><a href="products.html#cartier" class="nav__link">Cartier LOVE 컬렉션</a></li>
-        <li><a href="products.html#ribbon" class="nav__link">리본 매듭 링</a></li>
         <li><a href="about.html" class="nav__link">정품 보증 안내</a></li>
         <li><a href="contact.html" class="nav__link nav__link--caps">DM 문의</a></li>
         <li><a href="news.html" class="nav__link">뉴스</a></li>
@@ -90,7 +89,7 @@
     </nav>
   </header>
 
-  <main>
+  <main id="main-content">
 
     <!-- Hero -->
     <section class="hero">
@@ -127,7 +126,7 @@
     <!-- About Brand -->
     <section class="about">
       <div class="about__bg">
-        <img src="https://www.sodastw.com/cdn/shop/files/A22A2AC7-C995-4FC2-9639-3F9527A2D2EA.jpg" alt="" />
+        <img loading="lazy" src="https://www.sodastw.com/cdn/shop/files/A22A2AC7-C995-4FC2-9639-3F9527A2D2EA.jpg" alt="" />
         <div class="about__overlay"></div>
       </div>
       <div class="about__body">
@@ -141,7 +140,7 @@
     <!-- Category: Cartier LOVE -->
     <section class="category-split category-split--love">
       <div class="category-split__img">
-        <img src="https://www.sodastw.com/cdn/shop/files/554728a0627de323ba6c8.jpg" alt="Cartier LOVE 링 컬렉션" />
+        <img loading="lazy" src="https://www.sodastw.com/cdn/shop/files/554728a0627de323ba6c8.jpg" alt="Cartier LOVE 링 컬렉션" />
       </div>
       <div class="category-split__body">
         <span class="category-split__eyebrow">Cartier</span>
@@ -161,14 +160,14 @@
         <a href="products.html#ribbon" class="category-split__link">매듭 링 보기</a>
       </div>
       <div class="category-split__img">
-        <img src="https://www.sodastw.com/cdn/shop/files/7e7d67992d44ac1af5559.jpg" alt="리본 매듭 링" />
+        <img loading="lazy" src="https://www.sodastw.com/cdn/shop/files/7e7d67992d44ac1af5559.jpg" alt="리본 매듭 링" />
       </div>
     </section>
 
     <!-- Collection Banner -->
     <section class="collection-banner">
       <div class="collection-banner__bg">
-        <img src="https://www.sodastw.com/cdn/shop/files/8ef3f114bbc93a9763d87.jpg" alt="" />
+        <img loading="lazy" src="https://www.sodastw.com/cdn/shop/files/8ef3f114bbc93a9763d87.jpg" alt="" />
         <div class="collection-banner__overlay"></div>
       </div>
       <div class="collection-banner__body">
@@ -197,7 +196,9 @@
 
             <div class="pcard">
               <div class="pcard__media">
-                <button class="pcard__wish" aria-label="위시리스트 추가">
+                <button class="pcard__wish" aria-label="위시리스트 추가" data-wish-id="love-plain"
+                  data-wish-name="Cartier LOVE 링 — 플레인" data-wish-image="images/products/love-ring-pair-suede-02.jpg"
+                  data-wish-link="product.html?item=love-plain">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                     <path
                       d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
@@ -217,7 +218,9 @@
 
             <div class="pcard">
               <div class="pcard__media">
-                <button class="pcard__wish" aria-label="위시리스트 추가">
+                <button class="pcard__wish" aria-label="위시리스트 추가" data-wish-id="love-point"
+                  data-wish-name="Cartier LOVE 링 — 다이아 포인트" data-wish-image="images/products/love-ring-hand-tryon-03.jpg"
+                  data-wish-link="product.html?item=love-point">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                     <path
                       d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
@@ -237,7 +240,10 @@
 
             <div class="pcard">
               <div class="pcard__media">
-                <button class="pcard__wish" aria-label="위시리스트 추가">
+                <button class="pcard__wish" aria-label="위시리스트 추가" data-wish-id="love-pave"
+                  data-wish-name="Cartier LOVE 링 — 풀 파베 다이아몬드"
+                  data-wish-image="images/products/love-ring-hand-tryon-pave.jpg"
+                  data-wish-link="product.html?item=love-pave">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                     <path
                       d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
@@ -257,7 +263,9 @@
 
             <div class="pcard">
               <div class="pcard__media">
-                <button class="pcard__wish" aria-label="위시리스트 추가">
+                <button class="pcard__wish" aria-label="위시리스트 추가" data-wish-id="ribbon-knot"
+                  data-wish-name="리본 매듭 다이아 링 (화이트골드)" data-wish-image="images/products/knot-ring-01.jpg"
+                  data-wish-link="products.html#ribbon">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                     <path
                       d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
@@ -283,6 +291,7 @@
           </svg>
         </button>
       </div>
+      <div class="products__dots" id="productsDots" role="tablist" aria-label="상품 슬라이드 위치"></div>
       <div class="products__footer">
         <a href="products.html" class="btn btn--outline-dark">전체 상품 보기</a>
       </div>
@@ -291,7 +300,7 @@
     <!-- CTA Banner -->
     <section class="cta-banner">
       <div class="cta-banner__bg">
-        <img src="https://www.sodastw.com/cdn/shop/files/nhmanhinh2026-06-26luc09.43.32.png" alt="" />
+        <img loading="lazy" src="https://www.sodastw.com/cdn/shop/files/nhmanhinh2026-06-26luc09.43.32.png" alt="" />
         <div class="cta-banner__overlay"></div>
       </div>
       <div class="cta-banner__body">
@@ -396,7 +405,7 @@
           class="footer-email">@velo.rajwlry</a>
       </div>
     </div>
-    <div class="site-footer__legal" style="text-align: center;">
+    <div class="site-footer__legal">
       <p>Velora Jewelry는 Cartier 및 Tiffany &amp; Co.의 공식 대리점·파트너가 아닌 독립 리셀러입니다. 판매하는 모든 제품은 정품 확인 절차를 거친 정품 프리러브드(사전 소유)
         주얼리이며, 오리지널 박스와 인증서가 함께 제공됩니다.</p>
     </div>
@@ -428,6 +437,7 @@
   </a>
 
   <script src="script.js"></script>
+  <script src="wishlist.js"></script>
   <script>
     var menuToggle = document.getElementById('menuToggle');
     var headerNav = document.getElementById('headerNav');
@@ -436,6 +446,7 @@
         var isOpen = headerNav.classList.toggle('header__nav--open');
         menuToggle.classList.toggle('header__menu-toggle--open', isOpen);
         menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        document.body.classList.toggle('no-scroll', isOpen);
       });
     }
   </script>

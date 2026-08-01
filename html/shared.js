@@ -44,8 +44,6 @@ const HEADER_HTML = `
   <nav class="header__nav" id="headerNav">
     <ul class="nav__list">
       <li><a href="products.html" class="nav__link">전체 상품</a></li>
-      <li><a href="products.html#cartier" class="nav__link">Cartier LOVE 컬렉션</a></li>
-      <li><a href="products.html#ribbon" class="nav__link">리본 매듭 링</a></li>
       <li><a href="about.html" class="nav__link">정품 보증 안내</a></li>
       <li><a href="contact.html" class="nav__link nav__link--caps">DM 문의</a></li>
       <li><a href="news.html" class="nav__link">뉴스</a></li>
@@ -116,10 +114,17 @@ const NEWSLETTER_HTML = `
 `;
 
 document.addEventListener('DOMContentLoaded', function () {
+  // Skip-to-content link (accessibility)
+  var skipLink = document.createElement('a');
+  skipLink.href = '#main-content';
+  skipLink.className = 'skip-link';
+  skipLink.textContent = '본문 바로가기';
+  document.body.insertBefore(skipLink, document.body.firstChild);
+
   // Inject header before body content
   var headerEl = document.createElement('div');
   headerEl.innerHTML = HEADER_HTML;
-  document.body.insertBefore(headerEl, document.body.firstChild);
+  document.body.insertBefore(headerEl, skipLink.nextSibling);
 
   // Inject footer+newsletter before closing body
   var footerEl = document.createElement('div');
@@ -136,6 +141,13 @@ document.addEventListener('DOMContentLoaded', function () {
     if (h) h.style.boxShadow = window.scrollY > 40 ? '0 2px 12px rgba(0,0,0,0.08)' : 'none';
   }, { passive: true });
 
+  // Mark current page in nav
+  var currentFile = location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.nav__link').forEach(function (link) {
+    var linkFile = link.getAttribute('href').split('#')[0].split('/').pop();
+    if (linkFile === currentFile) link.setAttribute('aria-current', 'page');
+  });
+
   // Mobile menu toggle
   var toggle = document.getElementById('menuToggle');
   var nav = document.getElementById('headerNav');
@@ -144,6 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var isOpen = nav.classList.toggle('header__nav--open');
       toggle.classList.toggle('header__menu-toggle--open', isOpen);
       toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      document.body.classList.toggle('no-scroll', isOpen);
     });
   }
 });

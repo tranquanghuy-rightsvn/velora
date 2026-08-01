@@ -13,6 +13,7 @@
   var track = document.getElementById('productsTrack');
   var prevBtn = document.getElementById('prevBtn');
   var nextBtn = document.getElementById('nextBtn');
+  var dotsWrap = document.getElementById('productsDots');
   if (!track || !prevBtn || !nextBtn) return;
 
   var currentIndex = 0;
@@ -31,6 +32,27 @@
     return card.getBoundingClientRect().width + 20;
   }
 
+  function renderDots(maxIndex) {
+    if (!dotsWrap) return;
+    var count = maxIndex + 1;
+    if (dotsWrap.children.length !== count) {
+      dotsWrap.innerHTML = '';
+      for (var i = 0; i < count; i++) {
+        var dot = document.createElement('button');
+        dot.className = 'products__dot';
+        dot.setAttribute('aria-label', (i + 1) + '번째 화면으로 이동');
+        dot.addEventListener('click', (function (idx) {
+          return function () { currentIndex = idx; update(); };
+        })(i));
+        dotsWrap.appendChild(dot);
+      }
+    }
+    Array.prototype.forEach.call(dotsWrap.children, function (dot, i) {
+      dot.classList.toggle('products__dot--active', i === currentIndex);
+    });
+    dotsWrap.style.display = count <= 1 ? 'none' : '';
+  }
+
   function update() {
     var total = track.children.length;
     var maxIndex = Math.max(0, total - getVisibleCount());
@@ -38,6 +60,7 @@
     track.style.transform = 'translateX(-' + (currentIndex * getCardWidth()) + 'px)';
     prevBtn.disabled = currentIndex === 0;
     nextBtn.disabled = currentIndex >= maxIndex;
+    renderDots(maxIndex);
   }
 
   prevBtn.addEventListener('click', function () {
@@ -84,6 +107,9 @@
 
 /* ===== SCROLL REVEAL ===== */
 (function () {
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion) return;
+
   var css = '.reveal{opacity:0;transform:translateY(24px);transition:opacity .65s ease,transform .65s ease}.reveal.in{opacity:1;transform:none}';
   var s = document.createElement('style');
   s.textContent = css;
