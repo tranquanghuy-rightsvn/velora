@@ -1,23 +1,30 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Velora Jewelry</title>
+  <title>Velora Jewelry — 정품 프리러브드 럭셔리 주얼리</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300;400;500;600;700&family=Figtree:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300;400;500;600;700&family=Figtree:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
 
   <!-- Announcement Bar -->
   <div class="announcement-bar" id="announcementBar">
     <div class="announcement-bar__content">
-      <p>오래도록 변치 않을 주얼리 디자인 <a href="#">더 보기</a></p>
+      <p>모든 제품 정품 인증서 + 오리지널 박스 동봉 <a href="about.html">정품 보증 안내</a></p>
     </div>
-    <button class="announcement-bar__close" onclick="document.getElementById('announcementBar').remove()" aria-label="닫기">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <button class="announcement-bar__close" onclick="document.getElementById('announcementBar').remove()"
+      aria-label="닫기">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+      </svg>
     </button>
   </div>
 
@@ -29,42 +36,55 @@
           <button class="topbar-btn">
             <img src="https://cdn.shopify.com/static/images/flags/kr.svg" alt="대한민국" width="18" height="13" />
             대한민국 | KRW ₩
-            <svg width="9" height="5" viewBox="0 0 9 5"><path d="M0.5 0.5l4 4 4-4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg width="9" height="5" viewBox="0 0 9 5">
+              <path d="M0.5 0.5l4 4 4-4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
           </button>
-          <button class="topbar-btn">
-            한국어
-            <svg width="9" height="5" viewBox="0 0 9 5"><path d="M0.5 0.5l4 4 4-4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <a href="about.html" class="topbar-link">정보</a>
+          <a href="about.html" class="topbar-link">정품 보증</a>
           <a href="contact.html" class="topbar-link">문의하기</a>
         </div>
+        <button class="header__menu-toggle" id="menuToggle" aria-label="메뉴 열기" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
         <div class="header__logo">
           <a href="index.html" class="brand-wordmark">VELORA JEWELRY</a>
         </div>
         <div class="header__topbar-right">
-          <button class="icon-btn" aria-label="검색">
-            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          </button>
-          <a href="account.html" class="icon-btn" aria-label="계정">
-            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <a href="https://www.instagram.com/velo.rajwlry" target="_blank" rel="noopener" class="icon-btn"
+            aria-label="인스타그램">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="2" y="2" width="20" height="20" rx="5" />
+              <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+            </svg>
           </a>
           <a href="wishlist.html" class="icon-btn icon-btn--relative" aria-label="위시리스트">
-            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+            </svg>
             <span class="icon-badge">0</span>
           </a>
           <a href="cart.html" class="icon-btn" aria-label="장바구니">
-            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <path d="M16 10a4 4 0 01-8 0" />
+            </svg>
           </a>
         </div>
       </div>
     </div>
-    <nav class="header__nav">
+    <nav class="header__nav" id="headerNav">
       <ul class="nav__list">
-        <li><a href="#" class="nav__link">하이 주얼리</a></li>
-        <li><a href="#" class="nav__link">주얼리</a></li>
-        <li><a href="#" class="nav__link">시계</a></li>
-        <li><a href="#" class="nav__link">가방 및 액세서리</a></li>
-        <li><a href="contact.html" class="nav__link nav__link--caps">CUSTOM ORDER</a></li>
+        <li><a href="products.html" class="nav__link">전체 상품</a></li>
+        <li><a href="products.html#cartier" class="nav__link">Cartier LOVE 컬렉션</a></li>
+        <li><a href="products.html#ribbon" class="nav__link">리본 매듭 링</a></li>
+        <li><a href="about.html" class="nav__link">정품 보증 안내</a></li>
+        <li><a href="contact.html" class="nav__link nav__link--caps">DM 문의</a></li>
         <li><a href="news.html" class="nav__link">뉴스</a></li>
       </ul>
     </nav>
@@ -74,22 +94,33 @@
 
     <!-- Hero -->
     <section class="hero">
-      <img src="https://www.sodastw.com/cdn/shop/files/nh_man_hinh_2026-06-24_luc_13.51.06.png" alt="" class="hero__img" />
+      <img src="https://www.sodastw.com/cdn/shop/files/nh_man_hinh_2026-06-24_luc_13.51.06.png"
+        alt="Cartier LOVE 링 — 정품 프리러브드" class="hero__img" />
+      <div class="hero__caption">
+        <span class="hero__eyebrow">VELORA JEWELRY</span>
+        <h1 class="hero__heading">데일리로 걸치는 프리미엄</h1>
+        <p class="hero__sub">정품 인증서 · 오리지널 박스와 함께하는 프리러브드 럭셔리</p>
+        <a href="products.html" class="btn btn--ghost-white">컬렉션 보기</a>
+      </div>
     </section>
 
     <!-- Tagline -->
     <section class="tagline">
-      <h2 class="tagline__heading">당신의 영원함을 위해 만들어졌습니다</h2>
-      <p class="tagline__sub">삶의 가장 의미 있는 순간들을 기념하기 위해 세심하게 디자인된 작품들.</p>
-      <a href="#" class="tagline__link">당신의 영원을 위해 만들어지다</a>
+      <h2 class="tagline__heading">올드머니 무드는 가격이 아니라 디테일에서 완성됩니다</h2>
+      <p class="tagline__sub">브랜드 감성은 좋아하지만 합리적인 소비를 원하는 분들을 위해, 정품 확인을 거친 프리러브드 주얼리만 소개합니다.</p>
+      <a href="products.html" class="tagline__link">전체 컬렉션 보기</a>
     </section>
 
-    <!-- Reviews Marquee -->
-    <section class="reviews">
-      <div class="reviews__track" id="reviewsTrack">
-        <img src="https://www.sodastw.com/cdn/shop/files/A22A2AC7-C995-4FC2-9639-3F9527A2D2EA.jpg" alt="고객 후기" class="reviews__img" />
-        <img src="https://www.sodastw.com/cdn/shop/files/A22A2AC7-C995-4FC2-9639-3F9527A2D2EA.jpg" alt="고객 후기" class="reviews__img reviews__img--dim" />
-        <img src="https://www.sodastw.com/cdn/shop/files/A22A2AC7-C995-4FC2-9639-3F9527A2D2EA.jpg" alt="고객 후기" class="reviews__img" />
+    <!-- Reviews Marquee (brand voice, from @velo.rajwlry) -->
+    <section class="reviews reviews--quotes">
+      <div class="reviews__track reviews__track--quotes" id="reviewsTrack">
+        <p class="quote-card">"학교 갈 때도 예쁘고, 놀러 갈 때는 더 빛나요. 심플하지만 확실한 포인트가 되어주는 트렌디 주얼리."</p>
+        <p class="quote-card">"사진으로 봐도 예쁘지만, 실제로 보면 더 반하게 되는 아이템. 매일 손이 가는 데일리 주얼리."</p>
+        <p class="quote-card">"올드머니 무드는 가격보다 디테일에서 완성돼요. 은은하고 클래식한 디자인의 고급스러움."</p>
+        <p class="quote-card">"누가 선물해주길 기다리지 않아도 괜찮아요. 나를 위한 선물도 충분히 특별하니까요."</p>
+        <p class="quote-card">"고급스럽지만 성숙해 보이지 않고, 트렌디하지만 쉽게 질리지 않아요."</p>
+        <p class="quote-card">"학교 갈 때도 예쁘고, 놀러 갈 때는 더 빛나요. 심플하지만 확실한 포인트가 되어주는 트렌디 주얼리."</p>
+        <p class="quote-card">"사진으로 봐도 예쁘지만, 실제로 보면 더 반하게 되는 아이템. 매일 손이 가는 데일리 주얼리."</p>
       </div>
     </section>
 
@@ -100,33 +131,37 @@
         <div class="about__overlay"></div>
       </div>
       <div class="about__body">
-        <h2 class="about__heading">럭셔리에서 영감받아, 완벽하게 제작되다</h2>
-        <p class="about__text">저희는 세계적으로 유명한 명품 브랜드에서 영감을 받은 프리미엄 주얼리를 전문으로 합니다. 각 제품은 정교한 장인 정신으로 세심하게 디자인되어, 당신의 일상 스타일에 흠잡을 데 없는 마무리와 고급스러운 세련미를 선사합니다.</p>
-        <a href="#" class="btn btn--ghost-white">더 알아보기</a>
+        <h2 class="about__heading">정품 인증, 그 이상의 안심</h2>
+        <p class="about__text">Velora Jewelry는 Cartier, Tiffany &amp; Co. 등 세계적인 하우스의 정품 프리러브드 주얼리만을 엄선해 소개합니다. 모든 제품은
+          정품 확인 절차를 거치며, 오리지널 박스와 인증서가 함께 제공됩니다.</p>
+        <a href="about.html" class="btn btn--ghost-white">정품 보증 안내 보기</a>
       </div>
     </section>
 
-    <!-- Category: Rings -->
-    <section class="category-split">
+    <!-- Category: Cartier LOVE -->
+    <section class="category-split category-split--love">
       <div class="category-split__img">
-        <img src="https://www.sodastw.com/cdn/shop/files/554728a0627de323ba6c8.jpg" alt="반지 예술" />
+        <img src="https://www.sodastw.com/cdn/shop/files/554728a0627de323ba6c8.jpg" alt="Cartier LOVE 링 컬렉션" />
       </div>
       <div class="category-split__body">
-        <h2 class="category-split__heading">반지 예술</h2>
-        <p class="category-split__text">상징적인 명품 디자인, 뛰어난 마감, 시대를 초월한 우아함이 조화롭게 어우러진 정교하게 제작된 반지.</p>
-        <a href="#" class="category-split__link">링 살펴보기</a>
+        <span class="category-split__eyebrow">Cartier</span>
+        <h2 class="category-split__heading">LOVE 컬렉션</h2>
+        <p class="category-split__text">시대를 초월한 아이코닉 디자인, Cartier LOVE 링을 정품 인증서와 오리지널 박스와 함께 프리러브드 가격으로 만나보세요. 플레인, 다이아
+          포인트, 풀 파베까지.</p>
+        <a href="products.html#cartier" class="category-split__link">LOVE 컬렉션 보기</a>
       </div>
     </section>
 
-    <!-- Category: Bracelets -->
-    <section class="category-split category-split--reverse">
+    <!-- Category: Ribbon Knot Ring -->
+    <section class="category-split category-split--reverse category-split--ribbon">
       <div class="category-split__body">
-        <h2 class="category-split__heading">팔찌 선택</h2>
-        <p class="category-split__text">정교한 디테일과 완벽한 마감 처리가 돋보이는 프리미엄 럭셔리 스타일 팔찌로, 일상적인 손목 장신구를 재정의할 만큼 아름답게 제작되었습니다.</p>
-        <a href="#" class="category-split__link">팔찌 둘러보기</a>
+        <span class="category-split__eyebrow">Signature</span>
+        <h2 class="category-split__heading">리본 매듭 링</h2>
+        <p class="category-split__text">화이트골드에 파베 다이아몬드를 세팅한 리본 매듭 디자인. 은은하면서도 확실한 존재감으로 데일리 착용에 어울리는 한 점입니다.</p>
+        <a href="products.html#ribbon" class="category-split__link">매듭 링 보기</a>
       </div>
       <div class="category-split__img">
-        <img src="https://www.sodastw.com/cdn/shop/files/7e7d67992d44ac1af5559.jpg" alt="팔찌 선택" />
+        <img src="https://www.sodastw.com/cdn/shop/files/7e7d67992d44ac1af5559.jpg" alt="리본 매듭 링" />
       </div>
     </section>
 
@@ -137,17 +172,25 @@
         <div class="collection-banner__overlay"></div>
       </div>
       <div class="collection-banner__body">
-        <h2 class="collection-banner__heading">세르펜티 컬렉션</h2>
-        <p class="collection-banner__text">재해석된 럭셔리를 경험하세요. 아이코닉한 하이 주얼리 디자인에서 영감을 받아 숨 막힐 듯한 디테일과 완벽한 마감으로 정교하게 제작된 프리미엄 팔찌를 만나보세요.</p>
-        <a href="#" class="btn btn--ghost-white">컬렉션을 만나보세요</a>
+        <h2 class="collection-banner__heading">정품 인증, 오리지널 박스 포함</h2>
+        <p class="collection-banner__text">모든 제품은 정품 확인 절차를 거친 후에만 판매됩니다. 오리지널 박스와 인증서, 그리고 상세 컨디션 안내까지 — 안심하고 구매하실 수
+          있습니다.</p>
+        <a href="about.html" class="btn btn--ghost-white">정품 보증 안내</a>
       </div>
     </section>
 
     <!-- Products Carousel -->
     <section class="products">
+      <div class="products__header">
+        <h2 class="products__heading">지금 만나볼 수 있는 컬렉션</h2>
+        <p class="products__sub">한 점씩만 보유하는 프리러브드 특성상 재고가 빠르게 소진될 수 있습니다.</p>
+      </div>
       <div class="products__carousel" id="productsCarousel">
         <button class="products__arrow products__arrow--prev" id="prevBtn" aria-label="이전">
-          <svg width="9" height="16" viewBox="0 0 9 16"><path d="M8 1L1 8l7 7" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg width="9" height="16" viewBox="0 0 9 16">
+            <path d="M8 1L1 8l7 7" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
         </button>
         <div class="products__track-wrap">
           <div class="products__track" id="productsTrack">
@@ -155,107 +198,93 @@
             <div class="pcard">
               <div class="pcard__media">
                 <button class="pcard__wish" aria-label="위시리스트 추가">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path
+                      d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                  </svg>
                 </button>
-                <img src="https://www.sodastw.com/cdn/shop/files/nhmanhinh2026-06-22luc16.45.51.png" alt="세르펜티 바이퍼 브레이슬릿" />
-                <div class="pcard__dots"><span class="pdot pdot--active"></span><span class="pdot"></span><span class="pdot"></span></div>
+                <a href="product.html?item=love-plain"><img src="images/products/love-ring-pair-suede-02.jpg"
+                    alt="Cartier LOVE 링 - 플레인" /></a>
+                <span class="pcard__badge">정품 · 프리러브드</span>
               </div>
               <div class="pcard__info">
-                <p class="pcard__name">세르펜티 바이퍼 브레이슬릿</p>
-                <p class="pcard__label">정가</p>
-                <p class="pcard__price">₩95,000</p>
-                <a href="#" class="pcard__cta">장바구니 담기</a>
+                <p class="pcard__name">Cartier LOVE 링 — 플레인</p>
+                <p class="pcard__price">가격 문의 (DM)</p>
+                <a href="https://www.instagram.com/velo.rajwlry" target="_blank" rel="noopener" class="pcard__cta">DM으로
+                  문의하기</a>
               </div>
             </div>
 
             <div class="pcard">
               <div class="pcard__media">
                 <button class="pcard__wish" aria-label="위시리스트 추가">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path
+                      d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                  </svg>
                 </button>
-                <img src="https://www.sodastw.com/cdn/shop/files/bvl_3.jpg" alt="세르펜티 바이퍼 브레이슬릿" />
-                <div class="pcard__dots"><span class="pdot pdot--active"></span><span class="pdot"></span></div>
+                <a href="product.html?item=love-point"><img src="images/products/love-ring-hand-tryon-03.jpg"
+                    alt="Cartier LOVE 링 - 다이아 포인트" /></a>
+                <span class="pcard__badge">정품 · 프리러브드</span>
               </div>
               <div class="pcard__info">
-                <p class="pcard__name">세르펜티 바이퍼 브레이슬릿</p>
-                <p class="pcard__label">정가</p>
-                <p class="pcard__price">₩95,000</p>
-                <a href="#" class="pcard__cta pcard__cta--secondary">선택 사항을 고르세요</a>
+                <p class="pcard__name">Cartier LOVE 링 — 다이아 포인트</p>
+                <p class="pcard__price">가격 문의 (DM)</p>
+                <a href="https://www.instagram.com/velo.rajwlry" target="_blank" rel="noopener" class="pcard__cta">DM으로
+                  문의하기</a>
               </div>
             </div>
 
             <div class="pcard">
               <div class="pcard__media">
                 <button class="pcard__wish" aria-label="위시리스트 추가">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path
+                      d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                  </svg>
                 </button>
-                <img src="https://www.sodastw.com/cdn/shop/files/nhmanhinh2026-06-22luc16.02.23.png" alt="세이브더칠드런 목걸이" />
-                <div class="pcard__dots"><span class="pdot pdot--active"></span></div>
+                <a href="product.html?item=love-pave"><img src="images/products/love-ring-hand-tryon-pave.jpg"
+                    alt="Cartier LOVE 링 - 풀 파베 다이아몬드" /></a>
+                <span class="pcard__badge">정품 · 프리러브드</span>
               </div>
               <div class="pcard__info">
-                <p class="pcard__name">세이브더칠드런 목걸이</p>
-                <p class="pcard__label">정가</p>
-                <p class="pcard__price">₩90,000</p>
-                <a href="#" class="pcard__cta">장바구니 담기</a>
+                <p class="pcard__name">Cartier LOVE 링 — 풀 파베 다이아몬드</p>
+                <p class="pcard__price">가격 문의 (DM)</p>
+                <a href="https://www.instagram.com/velo.rajwlry" target="_blank" rel="noopener" class="pcard__cta">DM으로
+                  문의하기</a>
               </div>
             </div>
 
             <div class="pcard">
               <div class="pcard__media">
                 <button class="pcard__wish" aria-label="위시리스트 추가">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path
+                      d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                  </svg>
                 </button>
-                <img src="https://www.sodastw.com/cdn/shop/files/bvl_1.jpg" alt="세르펜티 바이퍼 링" />
-                <div class="pcard__dots"><span class="pdot pdot--active"></span><span class="pdot"></span></div>
+                <a href="products.html#ribbon"><img src="images/products/knot-ring-01.jpg" alt="리본 매듭 다이아 링" /></a>
+                <span class="pcard__badge">정품 · 프리러브드</span>
               </div>
               <div class="pcard__info">
-                <p class="pcard__name">세르펜티 바이퍼 링</p>
-                <p class="pcard__label">정가</p>
-                <p class="pcard__price">₩90,000</p>
-                <a href="#" class="pcard__cta pcard__cta--secondary">선택 사항을 고르세요</a>
-              </div>
-            </div>
-
-            <div class="pcard">
-              <div class="pcard__media">
-                <button class="pcard__wish" aria-label="위시리스트 추가">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-                </button>
-                <img src="https://www.sodastw.com/cdn/shop/files/cad68c31c6ec47b21efd6.jpg" alt="세르펜티 바이퍼 네크리스" />
-                <div class="pcard__dots"><span class="pdot pdot--active"></span></div>
-              </div>
-              <div class="pcard__info">
-                <p class="pcard__name">세르펜티 바이퍼 네크리스</p>
-                <p class="pcard__label">정가</p>
-                <p class="pcard__price">₩179,000</p>
-                <a href="#" class="pcard__cta">장바구니 담기</a>
-              </div>
-            </div>
-
-            <div class="pcard">
-              <div class="pcard__media">
-                <button class="pcard__wish" aria-label="위시리스트 추가">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-                </button>
-                <img src="https://www.sodastw.com/cdn/shop/files/image-1560067169144605.jpg" alt="B.zero1 네크리스" />
-                <div class="pcard__dots"><span class="pdot pdot--active"></span><span class="pdot"></span></div>
-              </div>
-              <div class="pcard__info">
-                <p class="pcard__name">B.zero1 네크리스</p>
-                <p class="pcard__label">정가</p>
-                <p class="pcard__price">₩90,000</p>
-                <a href="#" class="pcard__cta pcard__cta--secondary">선택 사항을 고르세요</a>
+                <p class="pcard__name">리본 매듭 다이아 링 (화이트골드)</p>
+                <p class="pcard__price">가격 문의 (DM)</p>
+                <a href="https://www.instagram.com/velo.rajwlry" target="_blank" rel="noopener"
+                  class="pcard__cta pcard__cta--secondary">DM으로 문의하기</a>
               </div>
             </div>
 
           </div>
         </div>
         <button class="products__arrow products__arrow--next" id="nextBtn" aria-label="다음">
-          <svg width="9" height="16" viewBox="0 0 9 16"><path d="M1 1l7 7-7 7" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg width="9" height="16" viewBox="0 0 9 16">
+            <path d="M1 1l7 7-7 7" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
         </button>
       </div>
       <div class="products__footer">
-        <a href="#" class="btn btn--outline-dark">전체 상품 보기</a>
+        <a href="products.html" class="btn btn--outline-dark">전체 상품 보기</a>
       </div>
     </section>
 
@@ -266,10 +295,11 @@
         <div class="cta-banner__overlay"></div>
       </div>
       <div class="cta-banner__body">
-        <h2 class="cta-banner__heading">당신의 영원함을 위해 만들어졌습니다</h2>
-        <p class="cta-banner__sub">삶의 가장 의미 있는 순간들을 기념하기 위해 세심하게 디자인된 작품들.</p>
-        <a href="#" class="btn btn--ghost-white">발견하기</a>
-        <p class="cta-banner__watermark">A JEWEL, A LOVED ONE</p>
+        <h2 class="cta-banner__heading">진짜라서 더 특별합니다</h2>
+        <p class="cta-banner__sub">모든 프리러브드 주얼리는 정품 확인 절차를 거쳐 인증서·오리지널 박스와 함께 도착합니다.</p>
+        <a href="https://www.instagram.com/velo.rajwlry" target="_blank" rel="noopener"
+          class="btn btn--ghost-white">인스타그램 DM으로 문의하기</a>
+        <p class="cta-banner__watermark">VELORA JEWELRY — CERTIFIED PRE-LOVED</p>
       </div>
     </section>
 
@@ -278,36 +308,50 @@
       <div class="features__inner">
         <div class="feature">
           <div class="feature__icon">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z" />
+              <path d="M9 12l2 2 4-4" />
+            </svg>
           </div>
-          <p class="feature__label">무료 배송</p>
+          <p class="feature__label">정품 확인 절차 진행</p>
         </div>
         <div class="feature">
           <div class="feature__icon">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"
+              stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="7" width="18" height="14" rx="1" />
+              <path d="M3 7l2-4h14l2 4" />
+              <path d="M3 11h18" />
+            </svg>
           </div>
-          <p class="feature__label">간편한 반품 또는 교환</p>
+          <p class="feature__label">오리지널 박스·인증서 포함</p>
         </div>
         <div class="feature">
           <div class="feature__icon">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><path d="M12 22V7M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+            </svg>
           </div>
-          <p class="feature__label">무료 선물 포장</p>
+          <p class="feature__label">DM으로 편리하게 문의</p>
+        </div>
+        <div class="feature">
+          <div class="feature__icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"
+              stroke-linecap="round" stroke-linejoin="round">
+              <rect x="1" y="3" width="15" height="13" />
+              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+              <circle cx="5.5" cy="18.5" r="2.5" />
+              <circle cx="18.5" cy="18.5" r="2.5" />
+            </svg>
+          </div>
+          <p class="feature__label">안전 포장 무료 배송</p>
         </div>
       </div>
     </section>
 
-    <!-- Newsletter -->
-    <section class="newsletter">
-      <div class="newsletter__inner">
-        <h3 class="newsletter__heading">뉴스레터를 구독하세요</h3>
-        <p class="newsletter__sub">새로운 컬렉션과 독점적인 혜택에 대해 가장 먼저 알아보세요.</p>
-        <form class="newsletter__form" onsubmit="return false;">
-          <input type="email" class="newsletter__input" placeholder="이메일 주소를 입력하세요" />
-          <button type="submit" class="newsletter__btn">구독하기</button>
-        </form>
-      </div>
-    </section>
+    <div id="newsletter-placeholder"></div>
 
   </main>
 
@@ -315,68 +359,86 @@
   <footer class="site-footer">
     <div class="site-footer__body">
       <div class="footer-brand">
-        <h4 class="footer-col-title">저희 매장</h4>
-        <p class="footer-brand__desc">하이엔드 감각으로 세심하게 제작된 프리미엄 럭셔리 주얼리를 만나보세요. 시대를 초월한 우아함과 완벽한 마감으로 당신의 일상 스타일에 품격을 더해드립니다.</p>
+        <a href="index.html" class="brand-wordmark footer-brand__wordmark">VELORA JEWELRY</a>
+        <p class="footer-brand__desc">Cartier, Tiffany &amp; Co. 등 정품 인증된 프리러브드(사전 소유) 럭셔리 주얼리를 엄선해 소개하는 편집숍입니다. 모든 제품은
+          정품 인증서와 오리지널 박스가 함께 제공됩니다.</p>
         <div class="footer-social">
-          <a href="#" class="social-icon" aria-label="Facebook">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
-          </a>
-          <a href="https://www.instagram.com/velo.rajwlry" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-          </a>
-          <a href="#" class="social-icon" aria-label="TikTok">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.5a8.18 8.18 0 004.78 1.52V6.54a4.85 4.85 0 01-1.01.15z"/></svg>
-          </a>
-          <a href="#" class="social-icon" aria-label="X">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          <a href="https://www.instagram.com/velo.rajwlry" target="_blank" rel="noopener" class="social-icon"
+            aria-label="Instagram">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="2" y="2" width="20" height="20" rx="5" />
+              <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+            </svg>
           </a>
         </div>
       </div>
       <div class="footer-col">
         <h4 class="footer-col-title">회사 소개</h4>
         <ul class="footer-col__links">
-          <li><a href="about.html">정보</a></li>
+          <li><a href="about.html">정품 보증 안내</a></li>
           <li><a href="contact.html">문의하기</a></li>
           <li><a href="faqs.html">자주 묻는 질문</a></li>
         </ul>
       </div>
       <div class="footer-col">
-        <h4 class="footer-col-title">서비스</h4>
+        <h4 class="footer-col-title">쇼핑</h4>
         <ul class="footer-col__links">
-          <li><a href="cart.html">카트</a></li>
+          <li><a href="products.html">전체 상품</a></li>
+          <li><a href="wishlist.html">위시리스트</a></li>
+          <li><a href="cart.html">장바구니</a></li>
           <li><a href="account.html">내 계정</a></li>
-          <li><a href="#">개인정보처리방침</a></li>
         </ul>
       </div>
       <div class="footer-col">
         <h4 class="footer-col-title">연락하며 지내자</h4>
-        <a href="https://www.instagram.com/velo.rajwlry" target="_blank" rel="noopener" class="footer-email">@velo.rajwlry</a>
+        <a href="https://www.instagram.com/velo.rajwlry" target="_blank" rel="noopener"
+          class="footer-email">@velo.rajwlry</a>
       </div>
+    </div>
+    <div class="site-footer__legal" style="text-align: center;">
+      <p>Velora Jewelry는 Cartier 및 Tiffany &amp; Co.의 공식 대리점·파트너가 아닌 독립 리셀러입니다. 판매하는 모든 제품은 정품 확인 절차를 거친 정품 프리러브드(사전 소유)
+        주얼리이며, 오리지널 박스와 인증서가 함께 제공됩니다.</p>
     </div>
     <div class="site-footer__bottom">
       <div class="footer-bottom__locale">
-        <button class="footer-locale-btn">대한민국 | KRW ₩ <svg width="9" height="5" viewBox="0 0 9 5"><path d="M0.5 0.5l4 4 4-4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        <button class="footer-locale-btn">한국어 <svg width="9" height="5" viewBox="0 0 9 5"><path d="M0.5 0.5l4 4 4-4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="footer-locale-btn">대한민국 | KRW ₩ <svg width="9" height="5" viewBox="0 0 9 5">
+            <path d="M0.5 0.5l4 4 4-4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg></button>
       </div>
       <p class="footer-copyright">© 2026, Velora Jewelry. <a href="#">개인정보처리방침</a></p>
       <div class="footer-payments">
-        <span class="payment-badge">AMEX</span>
-        <span class="payment-badge">Apple Pay</span>
-        <span class="payment-badge">G Pay</span>
-        <span class="payment-badge">MC</span>
-        <span class="payment-badge">Shop Pay</span>
-        <span class="payment-badge">Union Pay</span>
-        <span class="payment-badge">VISA</span>
+        <span class="payment-badge">카카오페이</span>
+        <span class="payment-badge">네이버페이</span>
+        <span class="payment-badge">계좌이체</span>
       </div>
     </div>
   </footer>
 
-  <!-- KakaoTalk Float Button -->
-  <a href="#" class="kakao-float" aria-label="카카오톡 문의">
-    <svg width="26" height="24" viewBox="0 0 26 24" fill="#3C1E1E"><path d="M13 0C5.82 0 0 4.70 0 10.5c0 3.74 2.36 7.03 5.93 8.97L4.5 24l5.8-3.07A15.5 15.5 0 0013 21c7.18 0 13-4.70 13-10.5S20.18 0 13 0z"/></svg>
-    <span>TALK</span>
+  <!-- Instagram DM Float Button -->
+  <a href="https://www.instagram.com/velo.rajwlry" target="_blank" rel="noopener" class="kakao-float"
+    aria-label="인스타그램 DM 문의">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3C1E1E" stroke-width="1.6">
+      <rect x="2" y="2" width="20" height="20" rx="5" />
+      <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+    </svg>
+    <span>DM</span>
   </a>
 
   <script src="script.js"></script>
+  <script>
+    var menuToggle = document.getElementById('menuToggle');
+    var headerNav = document.getElementById('headerNav');
+    if (menuToggle && headerNav) {
+      menuToggle.addEventListener('click', function () {
+        var isOpen = headerNav.classList.toggle('header__nav--open');
+        menuToggle.classList.toggle('header__menu-toggle--open', isOpen);
+        menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+    }
+  </script>
 </body>
+
 </html>
