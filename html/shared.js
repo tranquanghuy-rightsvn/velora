@@ -12,15 +12,6 @@ const HEADER_HTML = `
 <header class="site-header" id="siteHeader">
   <div class="header__topbar">
     <div class="header__topbar-inner">
-      <div class="header__topbar-left">
-        <button class="topbar-btn">
-          <img src="https://cdn.shopify.com/static/images/flags/kr.svg" alt="대한민국" width="18" height="13" />
-          대한민국 | KRW ₩
-          <svg width="9" height="5" viewBox="0 0 9 5"><path d="M0.5 0.5l4 4 4-4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <a href="about.html" class="topbar-link">정품 보증</a>
-        <a href="contact.html" class="topbar-link">문의하기</a>
-      </div>
       <button class="header__menu-toggle" id="menuToggle" aria-label="메뉴 열기" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -35,18 +26,20 @@ const HEADER_HTML = `
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
           <span class="icon-badge">0</span>
         </a>
-        <a href="cart.html" class="icon-btn" aria-label="장바구니">
+        <a href="cart.html" class="icon-btn icon-btn--relative" aria-label="장바구니">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          <span class="icon-badge">0</span>
         </a>
       </div>
     </div>
   </div>
   <nav class="header__nav" id="headerNav">
     <ul class="nav__list">
-      <li><a href="products.html" class="nav__link">전체 상품</a></li>
-      <li><a href="about.html" class="nav__link">정품 보증 안내</a></li>
-      <li><a href="contact.html" class="nav__link nav__link--caps">DM 문의</a></li>
-      <li><a href="news.html" class="nav__link">뉴스</a></li>
+      <li><a href="jewelry.html" class="nav__link"><span class="nav__link-text">주얼리</span></a></li>
+      <li><a href="watch.html" class="nav__link"><span class="nav__link-text">시계</span></a></li>
+      <li><a href="about.html" class="nav__link"><span class="nav__link-text">정품 보증 안내</span></a></li>
+      <li><a href="contact.html" class="nav__link nav__link--caps"><span class="nav__link-text">DM 문의</span></a></li>
+      <li><a href="news.html" class="nav__link"><span class="nav__link-text">뉴스</span></a></li>
     </ul>
   </nav>
 </header>
@@ -73,7 +66,8 @@ const FOOTER_HTML = `
     <div class="footer-col">
       <h4 class="footer-col-title">쇼핑</h4>
       <ul class="footer-col__links">
-        <li><a href="products.html">전체 상품</a></li>
+        <li><a href="jewelry.html">주얼리</a></li>
+        <li><a href="watch.html">시계</a></li>
         <li><a href="wishlist.html">위시리스트</a></li>
         <li><a href="cart.html">장바구니</a></li>
         <li><a href="account.html">내 계정</a></li>
@@ -121,10 +115,9 @@ document.addEventListener('DOMContentLoaded', function () {
   skipLink.textContent = '본문 바로가기';
   document.body.insertBefore(skipLink, document.body.firstChild);
 
-  // Inject header before body content
-  var headerEl = document.createElement('div');
-  headerEl.innerHTML = HEADER_HTML;
-  document.body.insertBefore(headerEl, skipLink.nextSibling);
+  // Inject header directly as body children (no wrapper div) so
+  // position:sticky on <header> isn't confined to a tiny containing block.
+  skipLink.insertAdjacentHTML('afterend', HEADER_HTML);
 
   // Inject footer+newsletter before closing body
   var footerEl = document.createElement('div');

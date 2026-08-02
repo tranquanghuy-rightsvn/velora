@@ -8,7 +8,7 @@
   }, { passive: true });
 })();
 
-/* ===== PRODUCT CAROUSEL ===== */
+/* ===== PRODUCT CAROUSEL (infinite loop, 1 item per click) ===== */
 (function () {
   var track = document.getElementById('productsTrack');
   var prevBtn = document.getElementById('prevBtn');
@@ -16,15 +16,26 @@
   var dotsWrap = document.getElementById('productsDots');
   if (!track || !prevBtn || !nextBtn) return;
 
-  var currentIndex = 0;
+  var realCards = Array.prototype.slice.call(track.children);
+  var realCount = realCards.length;
+  if (realCount === 0) return;
 
-  function getVisibleCount() {
-    var w = window.innerWidth;
-    if (w <= 480) return 1;
-    if (w <= 768) return 2;
-    if (w <= 1024) return 3;
-    return 4;
-  }
+  // Clone the full set on both sides ([clones][real][clones]) so there's always
+  // enough buffer to slide past either end, at any responsive item-count.
+  var headClones = document.createDocumentFragment();
+  var tailClones = document.createDocumentFragment();
+  realCards.forEach(function (card) {
+    var head = card.cloneNode(true);
+    head.setAttribute('aria-hidden', 'true');
+    headClones.appendChild(head);
+    var tail = card.cloneNode(true);
+    tail.setAttribute('aria-hidden', 'true');
+    tailClones.appendChild(tail);
+  });
+  track.insertBefore(headClones, track.firstChild);
+  track.appendChild(tailClones);
+
+  var currentIndex = realCount; // start on the first real card
 
   function getCardWidth() {
     var card = track.children[0];
@@ -32,47 +43,56 @@
     return card.getBoundingClientRect().width + 20;
   }
 
-  function renderDots(maxIndex) {
+  function realIndex() {
+    return ((currentIndex - realCount) % realCount + realCount) % realCount;
+  }
+
+  function renderDots() {
     if (!dotsWrap) return;
-    var count = maxIndex + 1;
-    if (dotsWrap.children.length !== count) {
+    if (dotsWrap.children.length !== realCount) {
       dotsWrap.innerHTML = '';
-      for (var i = 0; i < count; i++) {
+      for (var i = 0; i < realCount; i++) {
         var dot = document.createElement('button');
         dot.className = 'products__dot';
-        dot.setAttribute('aria-label', (i + 1) + '번째 화면으로 이동');
+        dot.setAttribute('aria-label', (i + 1) + '번째 상품으로 이동');
         dot.addEventListener('click', (function (idx) {
-          return function () { currentIndex = idx; update(); };
+          return function () { goTo(realCount + idx, true); };
         })(i));
         dotsWrap.appendChild(dot);
       }
     }
+    var ri = realIndex();
     Array.prototype.forEach.call(dotsWrap.children, function (dot, i) {
-      dot.classList.toggle('products__dot--active', i === currentIndex);
+      dot.classList.toggle('products__dot--active', i === ri);
     });
-    dotsWrap.style.display = count <= 1 ? 'none' : '';
+    dotsWrap.style.display = realCount <= 1 ? 'none' : '';
   }
 
-  function update() {
-    var total = track.children.length;
-    var maxIndex = Math.max(0, total - getVisibleCount());
-    if (currentIndex > maxIndex) currentIndex = maxIndex;
+  function goTo(index, animate) {
+    currentIndex = index;
+    track.style.transition = animate ? '' : 'none';
+    if (!animate) void track.offsetHeight; // commit "no transition" before jumping
     track.style.transform = 'translateX(-' + (currentIndex * getCardWidth()) + 'px)';
-    prevBtn.disabled = currentIndex === 0;
-    nextBtn.disabled = currentIndex >= maxIndex;
-    renderDots(maxIndex);
+    renderDots();
   }
 
-  prevBtn.addEventListener('click', function () {
-    if (currentIndex > 0) { currentIndex--; update(); }
-  });
-  nextBtn.addEventListener('click', function () {
-    var maxIndex = track.children.length - getVisibleCount();
-    if (currentIndex < maxIndex) { currentIndex++; update(); }
+  // Once a click slides into the cloned buffer, snap invisibly back to the
+  // matching real position so the next click keeps sliding the same direction.
+  track.addEventListener('transitionend', function (e) {
+    if (e.target !== track || e.propertyName !== 'transform') return;
+    if (currentIndex >= realCount * 2) {
+      goTo(currentIndex - realCount, false);
+    } else if (currentIndex < realCount) {
+      goTo(currentIndex + realCount, false);
+    }
   });
 
-  window.addEventListener('resize', update);
-  update();
+  prevBtn.addEventListener('click', function () { goTo(currentIndex - 1, true); });
+  nextBtn.addEventListener('click', function () { goTo(currentIndex + 1, true); });
+
+  window.addEventListener('resize', function () { goTo(currentIndex, false); });
+
+  goTo(realCount, false);
 })();
 
 /* ===== REVIEWS DRAG SCROLL ===== */
@@ -110,13 +130,15 @@
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduceMotion) return;
 
-  var css = '.reveal{opacity:0;transform:translateY(24px);transition:opacity .65s ease,transform .65s ease}.reveal.in{opacity:1;transform:none}';
+  var css = '.reveal{opacity:0;transform:translateY(24px);transition:opacity .65s ease,transform .65s ease}.reveal.in{opacity:1;transform:none}' +
+    '.reveal-left{opacity:0;transform:translateX(-24px);transition:opacity .65s ease,transform .65s ease}.reveal-left.in{opacity:1;transform:none}' +
+    '.reveal-right{opacity:0;transform:translateX(24px);transition:opacity .65s ease,transform .65s ease}.reveal-right.in{opacity:1;transform:none}';
   var s = document.createElement('style');
   s.textContent = css;
   document.head.appendChild(s);
 
   var selectors = [
-    '.tagline', '.about__body', '.category-split__body',
+    '.tagline', '.about__body',
     '.collection-banner__body', '.cta-banner__body',
     '.features__inner', '.newsletter__inner',
   ];
@@ -124,11 +146,19 @@
     document.querySelectorAll(sel).forEach(function (el) { el.classList.add('reveal'); });
   });
 
+  // Cartier LOVE split: image slides in from the left, text from the right.
+  document.querySelectorAll('.category-split--love .category-split__img').forEach(function (el) { el.classList.add('reveal-left'); });
+  document.querySelectorAll('.category-split--love .category-split__body').forEach(function (el) { el.classList.add('reveal-right'); });
+
+  // Ribbon split is mirrored (image on the right) — reveal mirrors it too.
+  document.querySelectorAll('.category-split--ribbon .category-split__img').forEach(function (el) { el.classList.add('reveal-right'); });
+  document.querySelectorAll('.category-split--ribbon .category-split__body').forEach(function (el) { el.classList.add('reveal-left'); });
+
   var io = new IntersectionObserver(function (entries) {
     entries.forEach(function (e) {
       if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
     });
   }, { threshold: 0.12 });
 
-  document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(function (el) { io.observe(el); });
 })();
