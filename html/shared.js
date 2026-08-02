@@ -3,7 +3,7 @@
 const HEADER_HTML = `
 <div class="announcement-bar" id="announcementBar">
   <div class="announcement-bar__content">
-    <p>모든 제품 정품 인증서 + 오리지널 박스 동봉 <a href="about.html">정품 보증 안내</a></p>
+    <p>모든 제품 정품 인증서 + 오리지널 박스 동봉 <a href="/about/">정품 보증 안내</a></p>
   </div>
   <button class="announcement-bar__close" onclick="document.getElementById('announcementBar').remove()" aria-label="닫기">
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -16,17 +16,17 @@ const HEADER_HTML = `
         <span></span><span></span><span></span>
       </button>
       <div class="header__logo">
-        <a href="index.html" class="brand-wordmark">VELORA JEWELRY</a>
+        <a href="/" class="brand-wordmark">VELORA JEWELRY</a>
       </div>
       <div class="header__topbar-right">
         <a href="https://www.instagram.com/velo.rajwlry" target="_blank" rel="noopener" class="icon-btn" aria-label="인스타그램">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
         </a>
-        <a href="wishlist.html" class="icon-btn icon-btn--relative" aria-label="위시리스트">
+        <a href="/wishlist/" class="icon-btn icon-btn--relative" aria-label="위시리스트">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
           <span class="icon-badge">0</span>
         </a>
-        <a href="cart.html" class="icon-btn icon-btn--relative" aria-label="장바구니">
+        <a href="/cart/" class="icon-btn icon-btn--relative" aria-label="장바구니">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
           <span class="icon-badge">0</span>
         </a>
@@ -35,11 +35,11 @@ const HEADER_HTML = `
   </div>
   <nav class="header__nav" id="headerNav">
     <ul class="nav__list">
-      <li><a href="jewelry.html" class="nav__link"><span class="nav__link-text">주얼리</span></a></li>
-      <li><a href="watch.html" class="nav__link"><span class="nav__link-text">시계</span></a></li>
-      <li><a href="about.html" class="nav__link"><span class="nav__link-text">정품 보증 안내</span></a></li>
-      <li><a href="contact.html" class="nav__link nav__link--caps"><span class="nav__link-text">DM 문의</span></a></li>
-      <li><a href="news.html" class="nav__link"><span class="nav__link-text">뉴스</span></a></li>
+      <li><a href="/jewelry/" class="nav__link"><span class="nav__link-text">주얼리</span></a></li>
+      <li><a href="/watch/" class="nav__link"><span class="nav__link-text">시계</span></a></li>
+      <li><a href="/about/" class="nav__link"><span class="nav__link-text">정품 보증 안내</span></a></li>
+      <li><a href="/contact/" class="nav__link nav__link--caps"><span class="nav__link-text">DM 문의</span></a></li>
+      <li><a href="/news/" class="nav__link"><span class="nav__link-text">뉴스</span></a></li>
     </ul>
   </nav>
 </header>
@@ -49,7 +49,7 @@ const FOOTER_HTML = `
 <footer class="site-footer">
   <div class="site-footer__body">
     <div class="footer-brand">
-      <a href="index.html" class="brand-wordmark footer-brand__wordmark">VELORA JEWELRY</a>
+      <a href="/" class="brand-wordmark footer-brand__wordmark">VELORA JEWELRY</a>
       <p class="footer-brand__desc">Cartier, Tiffany &amp; Co. 등 정품 인증된 프리러브드(사전 소유) 럭셔리 주얼리를 엄선해 소개하는 편집숍입니다. 모든 제품은 정품 인증서와 오리지널 박스가 함께 제공됩니다.</p>
       <div class="footer-social">
         <a href="https://www.instagram.com/velo.rajwlry" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
@@ -58,19 +58,19 @@ const FOOTER_HTML = `
     <div class="footer-col">
       <h4 class="footer-col-title">회사 소개</h4>
       <ul class="footer-col__links">
-        <li><a href="about.html">정품 보증 안내</a></li>
-        <li><a href="contact.html">문의하기</a></li>
-        <li><a href="faqs.html">자주 묻는 질문</a></li>
+        <li><a href="/about/">정품 보증 안내</a></li>
+        <li><a href="/contact/">문의하기</a></li>
+        <li><a href="/faqs/">자주 묻는 질문</a></li>
       </ul>
     </div>
     <div class="footer-col">
       <h4 class="footer-col-title">쇼핑</h4>
       <ul class="footer-col__links">
-        <li><a href="jewelry.html">주얼리</a></li>
-        <li><a href="watch.html">시계</a></li>
-        <li><a href="wishlist.html">위시리스트</a></li>
-        <li><a href="cart.html">장바구니</a></li>
-        <li><a href="account.html">내 계정</a></li>
+        <li><a href="/jewelry/">주얼리</a></li>
+        <li><a href="/watch/">시계</a></li>
+        <li><a href="/wishlist/">위시리스트</a></li>
+        <li><a href="/cart/">장바구니</a></li>
+        <li><a href="/account/">내 계정</a></li>
       </ul>
     </div>
     <div class="footer-col">
@@ -135,10 +135,15 @@ document.addEventListener('DOMContentLoaded', function () {
   }, { passive: true });
 
   // Mark current page in nav
-  var currentFile = location.pathname.split('/').pop() || 'index.html';
+  function normalizePath(path) {
+    path = path.split('#')[0].split('?')[0];
+    if (path.length > 1) path = path.replace(/\/$/, '');
+    return path || '/';
+  }
+  var currentPath = normalizePath(location.pathname);
   document.querySelectorAll('.nav__link').forEach(function (link) {
-    var linkFile = link.getAttribute('href').split('#')[0].split('/').pop();
-    if (linkFile === currentFile) link.setAttribute('aria-current', 'page');
+    var linkPath = normalizePath(link.getAttribute('href'));
+    if (linkPath === currentPath) link.setAttribute('aria-current', 'page');
   });
 
   // Mobile menu toggle
