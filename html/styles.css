@@ -274,7 +274,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .hero {
   position: relative;
   height: 200vh;
-  height: 200dvh;
+  height: 200svh;
   z-index: -1;
   isolation: isolate;
 }
@@ -282,7 +282,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   position: sticky;
   top: var(--header-h);
   height: 100vh;
-  height: 100dvh;
+  height: 100svh;
   overflow: hidden;
   z-index: -1;
 }
@@ -306,7 +306,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   z-index: 1;
   background: var(--color-bg);
   margin-top: -100vh;
-  margin-top: -100dvh;
+  margin-top: -100svh;
   text-align: center;
   padding: 72px 24px;
 }
@@ -1904,12 +1904,14 @@ select:focus-visible {
   }
   .header__nav--open { height: var(--mobile-nav-h, 260px); }
   .header__nav .nav__list {
+    width: 100%;
     flex-direction: column;
     align-items: stretch;
     gap: 0;
     padding: 4px 0 16px;
   }
   .header__nav .nav__link {
+    width: 100%;
     height: auto;
     padding: 12px 20px;
     border-bottom: 1px solid var(--color-border);
@@ -1923,7 +1925,7 @@ select:focus-visible {
   top: 0;
   left: 50%;
   height: 100vh;
-  height: 100dvh;
+  height: 100svh;
   transform: translateX(-50%);
   z-index: 1;
   display: flex;

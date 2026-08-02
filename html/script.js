@@ -8,6 +8,23 @@
   }, { passive: true });
 })();
 
+/* ===== SYNC --header-h TO REAL HEADER HEIGHT =====
+   The hero pin effect (top: var(--header-h)) needs this to match the
+   header's actual rendered height exactly, or the pinned image tucks
+   a few px under the header / leaves a sliver gap below it. */
+(function () {
+  var header = document.getElementById('siteHeader');
+  if (!header) return;
+  function syncHeaderHeight() {
+    document.documentElement.style.setProperty('--header-h', header.getBoundingClientRect().height + 'px');
+  }
+  syncHeaderHeight();
+  window.addEventListener('resize', syncHeaderHeight);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(syncHeaderHeight);
+  }
+})();
+
 /* ===== PRODUCT CAROUSEL (infinite loop, 1 item per click) ===== */
 (function () {
   var track = document.getElementById('productsTrack');
