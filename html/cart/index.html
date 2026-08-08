@@ -27,11 +27,19 @@
         <span class="cart-summary__label">총 금액</span>
         <span class="cart-summary__total-value">₩0</span>
       </div>
-      <button type="button" class="cart-summary__checkout" id="checkoutBtn">바로 결제하기</button>
+      <div id="paypalButtonContainer"></div>
+      <p class="cart-summary__pay-error" id="paypalError" style="display:none;"></p>
     </div>
 
     <div class="cart-empty-state">
       <p class="cart-empty-state__msg">장바구니가 비어있습니다</p>
+      <a href="/" class="cart-empty-state__link">쇼핑 계속하기</a>
+    </div>
+
+    <div class="cart-success-state" id="cartSuccessState" style="display:none;">
+      <svg class="cart-success-state__icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12.5l2.8 2.8L16 9.5"/></svg>
+      <p class="cart-success-state__msg">결제가 완료되었습니다</p>
+      <p class="cart-success-state__order" id="cartSuccessOrderId"></p>
       <a href="/" class="cart-empty-state__link">쇼핑 계속하기</a>
     </div>
 
@@ -45,6 +53,7 @@
 
   <script src="/shared.js"></script>
   <script src="/wishlist.js"></script>
+  <script src="https://www.paypal.com/sdk/js?client-id=BAAWN59ws8UKcTrXNK-TvQ5cpw9bBfHSw7ELYS-7Dz8lGCryz4cKQfEYPnO1bKqxqCc8qUOVtdgOVtKlIU&currency=KRW&intent=capture&components=buttons"></script>
   <script src="/cart.js"></script>
 </body>
 </html>
