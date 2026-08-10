@@ -28,7 +28,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from seo_common import BASE_URL, SITE_NAME, INSTAGRAM, DEFAULT_OG_IMAGE, abs_url, breadcrumb_jsonld  # noqa: E402
+from seo_common import BASE_URL, SITE_NAME, INSTAGRAM, DEFAULT_OG_IMAGE, COLLECTION_PAGE_PATHS, abs_url, breadcrumb_jsonld  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent / "html"
 
@@ -45,6 +45,10 @@ END = "<!-- SEO:AUTO:END -->"
 # breadcrumbs: [(label, url_path), ...] ending in the current page
 # schema: which JSON-LD type(s) to emit besides BreadcrumbList
 # robots: override default "index, follow"
+#
+# /jewelry/, /jewelry/rings|necklaces|bracelets|earrings/, /watch/ and
+# /products/<id>/ own their SEO block generation in generate_collections.py
+# / generate_products.py instead — not listed here.
 PAGES = [
     {
         "path": "",
@@ -53,20 +57,6 @@ PAGES = [
         "breadcrumbs": [("홈", "/")],
         "schema": {"org_website": True},
         "og_image": DEFAULT_OG_IMAGE,
-    },
-    {
-        "path": "jewelry",
-        "desc": "반지, 목걸이, 팔찌까지 Cartier · Tiffany & Co. · Van Cleef & Arpels 정품 프리러브드 주얼리를 만나보세요. "
-                "정품 인증서와 오리지널 박스가 모든 제품에 포함됩니다.",
-        "breadcrumbs": [("홈", "/"), ("주얼리", "/jewelry/")],
-        "schema": {"collection": True},
-    },
-    {
-        "path": "watch",
-        "desc": "산토스 드 까르띠에 등 정품 프리러브드 시계를 합리적인 가격에 만나보세요. "
-                "정품 인증서와 오리지널 박스가 모든 제품에 포함됩니다.",
-        "breadcrumbs": [("홈", "/"), ("시계", "/watch/")],
-        "schema": {"collection": True},
     },
     {
         "path": "about",
@@ -116,24 +106,6 @@ def get_title(soup: BeautifulSoup) -> str:
     return tag.get_text(strip=True) if tag else SITE_NAME
 
 
-def collection_count(html: str) -> int:
-    return len(re.findall(r'<div class="product-card">', html))
-
-
-def first_product_image(html: str) -> str | None:
-    m = re.search(r'<div class="product-grid[^"]*">.*?<img[^>]*\bsrc="([^"]+)"', html, re.S)
-    return m.group(1) if m else None
-
-
-def sync_product_count(html: str, count: int) -> str:
-    return re.sub(
-        r'(<p class="collection-toolbar__count">)\d+(개 제품</p>)',
-        rf"\g<1>{count}\g<2>",
-        html,
-        count=1,
-    )
-
-
 def extract_faqs(soup: BeautifulSoup) -> list[tuple[str, str]]:
     pairs = []
     for item in soup.select(".faq-item"):
@@ -149,7 +121,7 @@ def extract_faqs(soup: BeautifulSoup) -> list[tuple[str, str]]:
     return pairs
 
 
-def build_head_block(page: dict, soup: BeautifulSoup, raw_html: str) -> str:
+def build_head_block(page: dict, soup: BeautifulSoup) -> str:
     path = page["path"]
     url_path = f"/{path}/" if path else "/"
     url = abs_url(url_path)
@@ -203,24 +175,6 @@ def build_head_block(page: dict, soup: BeautifulSoup, raw_html: str) -> str:
             }
         )
 
-    if schema.get("collection"):
-        count = collection_count(raw_html)
-        img = first_product_image(raw_html)
-        item = {
-            "@type": "CollectionPage",
-            "name": title,
-            "description": desc,
-            "url": url,
-        }
-        if img:
-            item["image"] = abs_url(img)
-        if count:
-            item["mainEntity"] = {
-                "@type": "ItemList",
-                "numberOfItems": count,
-            }
-        graph.append(item)
-
     if schema.get("webpage"):
         graph.append(
             {
@@ -263,7 +217,7 @@ def process_file(path: Path, page: dict) -> bool:
     raw = path.read_text(encoding="utf-8")
     soup = BeautifulSoup(raw, "html.parser")
 
-    block = build_head_block(page, soup, raw)
+    block = build_head_block(page, soup)
 
     if START in raw and END in raw:
         new_raw = re.sub(
@@ -278,11 +232,6 @@ def process_file(path: Path, page: dict) -> bool:
             raise RuntimeError(f"no <title> found in {path}")
         insert_at = title_match.end()
         new_raw = raw[:insert_at] + "  " + block + "\n" + raw[insert_at:]
-
-    if page.get("schema", {}).get("collection"):
-        count = collection_count(new_raw)
-        if count:
-            new_raw = sync_product_count(new_raw, count)
 
     if new_raw != raw:
         path.write_text(new_raw, encoding="utf-8")
@@ -312,6 +261,11 @@ def write_sitemap():
             continue
         path = page["path"]
         urls.append((f"/{path}/" if path else "/", "weekly" if path == "" else "daily"))
+    for path in COLLECTION_PAGE_PATHS:
+        # Subcategory pages (e.g. watch/men) only exist once generate_collections.py
+        # has actually generated one — skip candidates with no matching products.
+        if (ROOT / path / "index.html").exists():
+            urls.append((f"/{path}/", "daily"))
 
     entries = "\n".join(
         f"  <url>\n    <loc>{abs_url(p)}</loc>\n    <changefreq>{freq}</changefreq>\n  </url>"

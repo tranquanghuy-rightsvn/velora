@@ -92,21 +92,62 @@
     errEl.style.display = msg ? '' : 'none';
   }
 
-  function showCheckoutSuccess(orderId) {
-    var items = document.getElementById('cartItems');
-    var summary = document.getElementById('cartSummary');
-    var success = document.getElementById('cartSuccessState');
-    if (items) items.style.display = 'none';
-    if (summary) summary.style.display = 'none';
-    if (success) {
-      success.style.display = '';
-      var orderEl = document.getElementById('cartSuccessOrderId');
-      if (orderEl) orderEl.textContent = orderId ? ('주문 번호: ' + orderId) : '';
+  function showCheckoutSuccessPopup() {
+    var overlay = document.getElementById('checkoutSuccessOverlay');
+    var popup;
+    if (!overlay) {
+      var css = '#checkoutSuccessOverlay{position:fixed;inset:0;z-index:10000;background:rgba(13,13,13,0.5);' +
+        'opacity:0;pointer-events:none;transition:opacity 1.4s ease-in-out;' +
+        'display:flex;align-items:center;justify-content:center;padding:20px;}' +
+        '#checkoutSuccessOverlay.is-visible{opacity:1;pointer-events:auto;}' +
+        '#checkoutSuccessPopup{position:relative;background:#fff;border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,0.22);' +
+        'padding:36px 40px 32px;text-align:center;width:100%;max-width:380px;' +
+        'opacity:0;transform:translateY(-80px);transition:opacity 1.1s ease-in-out,transform 1.1s ease-in-out;}' +
+        '#checkoutSuccessOverlay.is-visible #checkoutSuccessPopup{opacity:1;transform:translateY(0);}' +
+        '#checkoutSuccessPopup__close{position:absolute;top:12px;right:12px;padding:8px;color:var(--color-muted);opacity:0.55;transition:opacity 0.15s;}' +
+        '#checkoutSuccessPopup__close:hover{opacity:1;}' +
+        '#checkoutSuccessPopup__icon{width:60px;height:60px;border-radius:50%;background:#1a7a3c;' +
+        'display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}' +
+        '.checkout-success-popup__title{font-family:var(--font-heading);font-size:20px;font-weight:600;margin-bottom:8px;color:var(--color-text);}' +
+        '.checkout-success-popup__sub{font-size:13.5px;color:var(--color-muted);line-height:1.6;}' +
+        '@media (max-width:480px){#checkoutSuccessPopup{padding:30px 24px 26px;}}';
+      var style = document.createElement('style');
+      style.textContent = css;
+      document.head.appendChild(style);
+
+      overlay = document.createElement('div');
+      overlay.id = 'checkoutSuccessOverlay';
+      popup = document.createElement('div');
+      popup.id = 'checkoutSuccessPopup';
+      popup.innerHTML =
+        '<button type="button" id="checkoutSuccessPopup__close" aria-label="닫기">' +
+          '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>' +
+        '</button>' +
+        '<div id="checkoutSuccessPopup__icon">' +
+          '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>' +
+        '</div>' +
+        '<p class="checkout-success-popup__title">결제가 완료되었습니다!</p>' +
+        '<p class="checkout-success-popup__sub">소중한 주문 진심으로 감사합니다.<br>확인 후 인스타그램 DM으로 안내드릴게요.</p>';
+      overlay.appendChild(popup);
+      document.body.appendChild(overlay);
+
+      var hide = function () { overlay.classList.remove('is-visible'); };
+      popup.querySelector('#checkoutSuccessPopup__close').addEventListener('click', hide);
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) hide();
+      });
     }
+
+    overlay.classList.add('is-visible');
+    clearTimeout(overlay._autoHideTimer);
+    overlay._autoHideTimer = setTimeout(function () {
+      overlay.classList.remove('is-visible');
+    }, 7000);
   }
 
-  function generateOrderId() {
-    return 'VLR-' + Date.now().toString(36).toUpperCase();
+  function showCheckoutSuccess() {
+    renderCartPage();
+    showCheckoutSuccessPopup();
   }
 
   function initPaymentActions() {
@@ -131,10 +172,9 @@
       confirmBtn.addEventListener('click', function () {
         if (!getCart().length) return;
         showPaymentError('');
-        var orderId = generateOrderId();
         saveCart([]);
         updateBadges();
-        showCheckoutSuccess(orderId);
+        showCheckoutSuccess();
       });
     }
   }

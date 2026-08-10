@@ -5,14 +5,6 @@
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://velorakr.com/jewelry/</loc>
-    <changefreq>daily</changefreq>
-  </url>
-  <url>
-    <loc>https://velorakr.com/watch/</loc>
-    <changefreq>daily</changefreq>
-  </url>
-  <url>
     <loc>https://velorakr.com/about/</loc>
     <changefreq>daily</changefreq>
   </url>
@@ -26,6 +18,34 @@
   </url>
   <url>
     <loc>https://velorakr.com/news/</loc>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://velorakr.com/jewelry/</loc>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://velorakr.com/watch/</loc>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://velorakr.com/jewelry/rings/</loc>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://velorakr.com/jewelry/necklaces/</loc>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://velorakr.com/jewelry/bracelets/</loc>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://velorakr.com/jewelry/earrings/</loc>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://velorakr.com/watch/women/</loc>
     <changefreq>daily</changefreq>
   </url>
   <url>
