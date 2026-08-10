@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cartier LOVE 링 — 다이아 포인트 — Velora Jewelry</title>
+  <title id="pageTitle">상품 상세 — Velora Jewelry</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300;400;500;600&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -14,35 +14,28 @@
   <nav class="breadcrumb">
     <a href="/">홈</a>
     <span class="breadcrumb__sep">/</span>
-    <a href="/jewelry/">Cartier LOVE 컬렉션</a>
+    <a href="/jewelry/" id="breadcrumbCollection">주얼리</a>
     <span class="breadcrumb__sep">/</span>
-    <span>Cartier LOVE 링 — 다이아 포인트</span>
+    <span id="breadcrumbProduct">상품</span>
   </nav>
 
   <div class="product-detail" id="main-content">
     <div class="product-gallery">
-      <div class="product-gallery__thumbs">
-        <button class="product-gallery__thumb product-gallery__thumb--active"><img src="/images/products/love-ring-hand-tryon-03.jpg" alt="" /></button>
-        <button class="product-gallery__thumb"><img loading="lazy" src="/images/products/love-ring-pair-suede-02.jpg" alt="" /></button>
-        <button class="product-gallery__thumb"><img loading="lazy" src="/images/products/love-ring-box-open-01.jpg" alt="" /></button>
-        <button class="product-gallery__thumb"><img loading="lazy" src="/images/products/love-ring-certificate-01.jpg" alt="" /></button>
-      </div>
+      <div class="product-gallery__thumbs" id="productGalleryThumbs"></div>
       <div class="product-gallery__main">
-        <img src="/images/products/love-ring-hand-tryon-03.jpg" alt="Cartier LOVE 링 — 다이아 포인트" id="productMainImg" />
+        <img src="" alt="" id="productMainImg" />
       </div>
     </div>
 
     <div class="product-info">
-      <p class="product-info__vendor">Cartier</p>
-      <h1 class="product-info__title">Cartier LOVE 링 — 다이아 포인트</h1>
+      <p class="product-info__vendor">Velora</p>
+      <h1 class="product-info__title" id="productTitle"></h1>
       <p class="product-info__price-label">가격</p>
-      <p class="product-info__price">₩90,000</p>
+      <p class="product-info__price" id="productPrice"></p>
       <p class="product-info__tax">정품 확인 완료 · 오리지널 박스 &amp; 인증서 포함.</p>
 
       <div class="product-info__actions">
-        <a href="/cart/" class="product-info__add-to-cart" data-cart-id="love-point"
-          data-cart-name="Cartier LOVE 링 — 다이아 포인트" data-cart-image="/images/products/love-ring-hand-tryon-03.jpg"
-          data-cart-price="90000">
+        <a href="/cart/" class="product-info__add-to-cart" id="addToCartBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="10" y1="11" x2="14" y2="11"/></svg>
           <span class="product-info__add-to-cart-label">장바구니 담기</span>
         </a>
@@ -50,7 +43,7 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
       </div>
-      <a href="/jewelry/" class="product-info__other-options">다른 LOVE 링 옵션 보기</a>
+      <a href="/jewelry/" class="product-info__other-options" id="otherOptionsLink">다른 상품 보기</a>
 
       <div class="product-info__secure">
         <p>DM 문의 후 결제 안내</p>
@@ -83,17 +76,7 @@
       <div class="faq-item open">
         <button class="faq-item__btn">설명 <span class="faq-item__icon">+</span></button>
         <div class="faq-item__body">
-          <div class="faq-item__content">
-            <p>Cartier의 시그니처 LOVE 컬렉션 중 다이아 포인트 모델입니다. 스크루 모티프 사이사이 다이아몬드가 세팅되어 있으며, 매끈한 폴리시 마감의 밴드가 손가락에 안정적으로 안착됩니다. 본 제품은 정품 확인을 거친 프리러브드(사전 소유) 제품으로, 오리지널 박스와 정품 인증서가 함께 제공됩니다.</p>
-            <p><strong>제품 정보</strong></p>
-            <ul>
-              <li>브랜드: Cartier (정품, 비공식 리셀)</li>
-              <li>소재: 18K 골드, 다이아몬드 포인트 세팅</li>
-              <li>컨디션: 매입 시 정품 감정 및 상태 점검 완료, 상세 컨디션은 DM 문의 시 실사진과 함께 안내</li>
-              <li>구성품: 오리지널 박스, 정품 인증서</li>
-              <li>사이즈: 프리러브드 특성상 단일 사이즈 재고이며 재고 소진 시 판매가 종료됩니다</li>
-            </ul>
-          </div>
+          <div class="faq-item__content" id="productDescriptionContent"></div>
         </div>
       </div>
       <div class="faq-item">
@@ -133,174 +116,6 @@
         <div class="products__viewport">
           <div class="products__track" id="productsTrack">
 
-            <div class="pcard">
-              <div class="pcard__media">
-                <button class="pcard__wish" aria-label="위시리스트 추가" data-wish-id="love-plain"
-                  data-wish-name="Cartier LOVE 링 — 플레인" data-wish-image="/images/products/love-ring-pair-suede-02.jpg"
-                  data-wish-link="/product/?item=love-plain">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path
-                      d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-                  </svg>
-                </button>
-                <a href="/product/?item=love-plain"><img src="/images/products/love-ring-pair-suede-02.jpg"
-                    alt="Cartier LOVE 링 - 플레인" /></a>
-                <span class="pcard__badge">정품 · 프리러브드</span>
-              </div>
-              <div class="pcard__info">
-                <p class="pcard__name">Cartier LOVE 링 — 플레인</p>
-                <p class="pcard__price">₩90,000</p>
-                <a href="/product/?item=love-plain" class="pcard__cta">장바구니 담기</a>
-              </div>
-            </div>
-
-            <div class="pcard">
-              <div class="pcard__media">
-                <button class="pcard__wish" aria-label="위시리스트 추가" data-wish-id="love-point"
-                  data-wish-name="Cartier LOVE 링 — 다이아 포인트" data-wish-image="/images/products/love-ring-hand-tryon-03.jpg"
-                  data-wish-link="/product/?item=love-point">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path
-                      d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-                  </svg>
-                </button>
-                <a href="/product/?item=love-point"><img src="/images/products/love-ring-hand-tryon-03.jpg"
-                    alt="Cartier LOVE 링 - 다이아 포인트" /></a>
-                <span class="pcard__badge">정품 · 프리러브드</span>
-              </div>
-              <div class="pcard__info">
-                <p class="pcard__name">Cartier LOVE 링 — 다이아 포인트</p>
-                <p class="pcard__price">₩90,000</p>
-                <a href="/product/?item=love-point" class="pcard__cta">장바구니 담기</a>
-              </div>
-            </div>
-
-            <div class="pcard">
-              <div class="pcard__media">
-                <button class="pcard__wish" aria-label="위시리스트 추가" data-wish-id="love-pave"
-                  data-wish-name="Cartier LOVE 링 — 풀 파베 다이아몬드"
-                  data-wish-image="/images/products/love-ring-hand-tryon-pave.jpg"
-                  data-wish-link="/product/?item=love-pave">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path
-                      d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-                  </svg>
-                </button>
-                <a href="/product/?item=love-pave"><img src="/images/products/love-ring-hand-tryon-pave.jpg"
-                    alt="Cartier LOVE 링 - 풀 파베 다이아몬드" /></a>
-                <span class="pcard__badge">정품 · 프리러브드</span>
-              </div>
-              <div class="pcard__info">
-                <p class="pcard__name">Cartier LOVE 링 — 풀 파베 다이아몬드</p>
-                <p class="pcard__price">₩90,000</p>
-                <a href="/product/?item=love-pave" class="pcard__cta">장바구니 담기</a>
-              </div>
-            </div>
-
-            <div class="pcard">
-              <div class="pcard__media">
-                <button class="pcard__wish" aria-label="위시리스트 추가" data-wish-id="ribbon-knot"
-                  data-wish-name="리본 매듭 다이아 링 (화이트골드)" data-wish-image="/images/products/knot-ring-01.jpg"
-                  data-wish-link="/product/?item=ribbon-knot">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path
-                      d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-                  </svg>
-                </button>
-                <a href="/product/?item=ribbon-knot"><img src="/images/products/knot-ring-01.jpg" alt="리본 매듭 다이아 링" /></a>
-                <span class="pcard__badge">정품 · 프리러브드</span>
-              </div>
-              <div class="pcard__info">
-                <p class="pcard__name">리본 매듭 다이아 링 (화이트골드)</p>
-                <p class="pcard__price">₩90,000</p>
-                <a href="/product/?item=ribbon-knot" class="pcard__cta">장바구니 담기</a>
-              </div>
-            </div>
-
-            <div class="pcard">
-              <div class="pcard__media">
-                <button class="pcard__wish" aria-label="위시리스트 추가" data-wish-id="love-plain"
-                  data-wish-name="Cartier LOVE 링 — 플레인" data-wish-image="/images/products/love-ring-pair-suede-02.jpg"
-                  data-wish-link="/product/?item=love-plain">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path
-                      d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-                  </svg>
-                </button>
-                <a href="/product/?item=love-plain"><img src="/images/products/love-ring-pair-suede-02.jpg"
-                    alt="Cartier LOVE 링 - 플레인" /></a>
-                <span class="pcard__badge">정품 · 프리러브드</span>
-              </div>
-              <div class="pcard__info">
-                <p class="pcard__name">Cartier LOVE 링 — 플레인</p>
-                <p class="pcard__price">₩90,000</p>
-                <a href="/product/?item=love-plain" class="pcard__cta">장바구니 담기</a>
-              </div>
-            </div>
-
-            <div class="pcard">
-              <div class="pcard__media">
-                <button class="pcard__wish" aria-label="위시리스트 추가" data-wish-id="love-point"
-                  data-wish-name="Cartier LOVE 링 — 다이아 포인트" data-wish-image="/images/products/love-ring-hand-tryon-03.jpg"
-                  data-wish-link="/product/?item=love-point">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path
-                      d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-                  </svg>
-                </button>
-                <a href="/product/?item=love-point"><img src="/images/products/love-ring-hand-tryon-03.jpg"
-                    alt="Cartier LOVE 링 - 다이아 포인트" /></a>
-                <span class="pcard__badge">정품 · 프리러브드</span>
-              </div>
-              <div class="pcard__info">
-                <p class="pcard__name">Cartier LOVE 링 — 다이아 포인트</p>
-                <p class="pcard__price">₩90,000</p>
-                <a href="/product/?item=love-point" class="pcard__cta">장바구니 담기</a>
-              </div>
-            </div>
-
-            <div class="pcard">
-              <div class="pcard__media">
-                <button class="pcard__wish" aria-label="위시리스트 추가" data-wish-id="love-pave"
-                  data-wish-name="Cartier LOVE 링 — 풀 파베 다이아몬드"
-                  data-wish-image="/images/products/love-ring-hand-tryon-pave.jpg"
-                  data-wish-link="/product/?item=love-pave">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path
-                      d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-                  </svg>
-                </button>
-                <a href="/product/?item=love-pave"><img src="/images/products/love-ring-hand-tryon-pave.jpg"
-                    alt="Cartier LOVE 링 - 풀 파베 다이아몬드" /></a>
-                <span class="pcard__badge">정품 · 프리러브드</span>
-              </div>
-              <div class="pcard__info">
-                <p class="pcard__name">Cartier LOVE 링 — 풀 파베 다이아몬드</p>
-                <p class="pcard__price">₩90,000</p>
-                <a href="/product/?item=love-pave" class="pcard__cta">장바구니 담기</a>
-              </div>
-            </div>
-
-            <div class="pcard">
-              <div class="pcard__media">
-                <button class="pcard__wish" aria-label="위시리스트 추가" data-wish-id="ribbon-knot"
-                  data-wish-name="리본 매듭 다이아 링 (화이트골드)" data-wish-image="/images/products/knot-ring-01.jpg"
-                  data-wish-link="/product/?item=ribbon-knot">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path
-                      d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-                  </svg>
-                </button>
-                <a href="/product/?item=ribbon-knot"><img src="/images/products/knot-ring-01.jpg" alt="리본 매듭 다이아 링" /></a>
-                <span class="pcard__badge">정품 · 프리러브드</span>
-              </div>
-              <div class="pcard__info">
-                <p class="pcard__name">리본 매듭 다이아 링 (화이트골드)</p>
-                <p class="pcard__price">₩90,000</p>
-                <a href="/product/?item=ribbon-knot" class="pcard__cta">장바구니 담기</a>
-              </div>
-            </div>
-
           </div>
         </div>
       </div>
@@ -317,18 +132,18 @@
   <!-- Sticky mobile purchase bar -->
   <div class="sticky-buy-bar" id="stickyBuyBar">
     <div class="sticky-buy-bar__info">
-      <p class="sticky-buy-bar__name">Cartier LOVE 링 — 다이아 포인트</p>
-      <p class="sticky-buy-bar__price">₩90,000</p>
+      <p class="sticky-buy-bar__name" id="stickyBuyBarName"></p>
+      <p class="sticky-buy-bar__price" id="stickyBuyBarPrice"></p>
     </div>
-    <a href="/cart/" class="sticky-buy-bar__cta" data-cart-id="love-point"
-      data-cart-name="Cartier LOVE 링 — 다이아 포인트" data-cart-image="/images/products/love-ring-hand-tryon-03.jpg"
-      data-cart-price="90000">장바구니 담기</a>
+    <a href="/cart/" class="sticky-buy-bar__cta" id="stickyBuyBarCta">장바구니 담기</a>
   </div>
 
   <div id="newsletter-placeholder"></div>
 
   <script src="/shared.js"></script>
   <script src="/wishlist.js"></script>
+  <script src="/products-data.js"></script>
+  <script src="/product-detail.js"></script>
   <script src="/script.js"></script>
   <script src="/cart.js"></script>
   <script>

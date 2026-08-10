@@ -1361,6 +1361,48 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   text-align: center;
 }
 
+.cart-payment { display: flex; flex-direction: column; gap: 14px; }
+.cart-payment__title { font-size: 13px; font-weight: 600; color: var(--color-muted); margin-bottom: 2px; }
+.cart-payment__option {
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 18px;
+}
+.cart-payment__option-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.cart-payment__option-label { font-size: 14.5px; font-weight: 600; }
+.cart-payment__option-desc { font-size: 12.5px; color: var(--color-muted); line-height: 1.6; margin-bottom: 14px; }
+.cart-payment__bank { margin-bottom: 16px; }
+.cart-payment__bank .contact-block { margin-bottom: 12px; }
+.cart-payment__bank .contact-block:last-child { margin-bottom: 0; }
+.cart-payment__account-row { display: flex; align-items: center; gap: 10px; }
+.cart-payment__copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--color-muted);
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  padding: 3px 8px;
+  transition: border-color 0.15s, color 0.15s;
+}
+.cart-payment__copy-btn:hover { border-color: var(--color-text); color: var(--color-text); }
+.cart-payment__cta {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 12px 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  border-radius: 3px;
+  transition: all 0.2s;
+}
+.cart-payment__cta--primary { background: var(--color-text); color: #fff; }
+.cart-payment__cta--primary:hover { background: #333; }
+.cart-payment__cta--outline { background: transparent; color: var(--color-text); border: 1px solid var(--color-text); }
+.cart-payment__cta--outline:hover { background: var(--color-text); color: #fff; }
+
 @media (max-width: 480px) {
   .cart-item {
     display: grid;
@@ -1400,6 +1442,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   font-weight: 400;
   margin-bottom: 8px;
 }
+.cart-success-state__sub { font-size: 13.5px; color: var(--color-muted); margin-bottom: 10px; }
 .cart-success-state__order { font-size: 13px; color: var(--color-muted); margin-bottom: 16px; }
 .cart-login-prompt {
   border-top: 1px solid var(--color-border);

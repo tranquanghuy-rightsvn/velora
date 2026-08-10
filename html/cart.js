@@ -85,14 +85,8 @@
     setQty(id, 0);
   }
 
-  function getCartTotal() {
-    return getCart().reduce(function (sum, it) { return sum + it.price * it.qty; }, 0);
-  }
-
-  var paypalRendered = false;
-
-  function showPaypalError(msg) {
-    var errEl = document.getElementById('paypalError');
+  function showPaymentError(msg) {
+    var errEl = document.getElementById('cartPaymentError');
     if (!errEl) return;
     errEl.textContent = msg;
     errEl.style.display = msg ? '' : 'none';
@@ -111,40 +105,38 @@
     }
   }
 
-  function renderPaypalButton() {
-    var container = document.getElementById('paypalButtonContainer');
-    if (!container || paypalRendered) return;
-    if (typeof paypal === 'undefined' || !paypal.Buttons) {
-      showPaypalError('PayPal 결제 모듈을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.');
-      return;
-    }
-    paypalRendered = true;
+  function generateOrderId() {
+    return 'VLR-' + Date.now().toString(36).toUpperCase();
+  }
 
-    // KRW is a zero-decimal currency for PayPal: amount must be a whole number.
-    paypal.Buttons({
-      style: { layout: 'vertical', color: 'black', shape: 'rect', label: 'pay' },
-      createOrder: function (data, actions) {
-        showPaypalError('');
-        var value = String(Math.max(1, Math.round(getCartTotal())));
-        return actions.order.create({
-          purchase_units: [{ amount: { currency_code: 'KRW', value: value } }]
-        });
-      },
-      onApprove: function (data, actions) {
-        return actions.order.capture().then(function (details) {
-          saveCart([]);
-          updateBadges();
-          showCheckoutSuccess(details.id);
-        });
-      },
-      onCancel: function () {
-        showPaypalError('결제가 취소되었습니다.');
-      },
-      onError: function (err) {
-        console.error('PayPal error:', err);
-        showPaypalError('결제 중 오류가 발생했습니다. 다시 시도해주세요.');
-      }
-    }).render('#paypalButtonContainer');
+  function initPaymentActions() {
+    var copyBtn = document.getElementById('copyAccountBtn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function () {
+        var accountNumber = document.getElementById('bankAccountNumber');
+        var text = accountNumber ? accountNumber.textContent.trim() : '';
+        if (!text) return;
+        var done = function () { showToast('계좌번호가 복사되었습니다'); };
+        var fail = function () { showPaymentError('계좌번호 복사에 실패했습니다. 직접 선택해 복사해주세요.'); };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done, fail);
+        } else {
+          fail();
+        }
+      });
+    }
+
+    var confirmBtn = document.getElementById('confirmBankTransferBtn');
+    if (confirmBtn) {
+      confirmBtn.addEventListener('click', function () {
+        if (!getCart().length) return;
+        showPaymentError('');
+        var orderId = generateOrderId();
+        saveCart([]);
+        updateBadges();
+        showCheckoutSuccess(orderId);
+      });
+    }
   }
 
   function flashAdded(btn) {
@@ -235,7 +227,6 @@
       var totalEl = summary.querySelector('.cart-summary__total-value');
       if (totalEl) totalEl.textContent = '₩' + total.toLocaleString();
     }
-    renderPaypalButton();
 
     container.querySelectorAll('.cart-item').forEach(function (row) {
       var id = row.getAttribute('data-id');
@@ -255,6 +246,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     initAddButtons();
+    initPaymentActions();
     updateBadges();
     renderCartPage();
   });
