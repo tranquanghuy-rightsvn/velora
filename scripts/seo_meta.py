@@ -22,24 +22,18 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from pathlib import Path
 
 from bs4 import BeautifulSoup
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from seo_common import BASE_URL, SITE_NAME, INSTAGRAM, DEFAULT_OG_IMAGE, abs_url, breadcrumb_jsonld  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent / "html"
-BASE_URL = "https://velorakr.com"
-SITE_NAME = "Velora Jewelry"
-DEFAULT_OG_IMAGE = "https://www.sodastw.com/cdn/shop/files/nh_man_hinh_2026-06-24_luc_13.51.06.png"
-INSTAGRAM = "https://www.instagram.com/velo.rajwlry"
 
 START = "<!-- SEO:AUTO:START -->"
 END = "<!-- SEO:AUTO:END -->"
-
-
-def abs_url(path: str) -> str:
-    if path.startswith("http://") or path.startswith("https://"):
-        return path
-    return BASE_URL + path
 
 
 # ---------------------------------------------------------------------------
@@ -73,12 +67,6 @@ PAGES = [
                 "정품 인증서와 오리지널 박스가 모든 제품에 포함됩니다.",
         "breadcrumbs": [("홈", "/"), ("시계", "/watch/")],
         "schema": {"collection": True},
-    },
-    {
-        "path": "product",
-        "desc": "Velora Jewelry에서 판매 중인 정품 프리러브드 주얼리와 시계의 상세 정보, 가격, 정품 인증 안내를 확인해 보세요.",
-        "breadcrumbs": [("홈", "/"), ("주얼리", "/jewelry/")],
-        "schema": {},
     },
     {
         "path": "about",
@@ -126,21 +114,6 @@ PAGES = [
 def get_title(soup: BeautifulSoup) -> str:
     tag = soup.find("title")
     return tag.get_text(strip=True) if tag else SITE_NAME
-
-
-def breadcrumb_jsonld(crumbs: list[tuple[str, str]]) -> dict:
-    return {
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-            {
-                "@type": "ListItem",
-                "position": i + 1,
-                "name": label,
-                "item": abs_url(url),
-            }
-            for i, (label, url) in enumerate(crumbs)
-        ],
-    }
 
 
 def collection_count(html: str) -> int:
@@ -345,7 +318,7 @@ def write_sitemap():
         for p, freq in urls
     )
     entries += "\n" + "\n".join(
-        f'  <url>\n    <loc>{abs_url("/product/?item=" + prod["id"])}</loc>\n    <changefreq>weekly</changefreq>\n  </url>'
+        f'  <url>\n    <loc>{abs_url("/products/" + prod["id"] + "/")}</loc>\n    <changefreq>weekly</changefreq>\n  </url>'
         for prod in products
     )
 
