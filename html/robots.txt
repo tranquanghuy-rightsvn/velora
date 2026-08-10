@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /cart/
+Disallow: /wishlist/
+Sitemap: https://velorakr.com/sitemap.xml

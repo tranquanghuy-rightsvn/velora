@@ -5,6 +5,9 @@
   var products = window.VELORA_PRODUCTS || [];
   if (!products.length) return;
 
+  var BASE_URL = 'https://velorakr.com';
+  var SITE_NAME = 'Velora Jewelry';
+
   var COLLECTION = {
     jewelry: { label: '주얼리', link: '/jewelry/' },
     watch: { label: '시계', link: '/watch/' },
@@ -16,6 +19,104 @@
 
   function money(n) {
     return '₩' + Number(n).toLocaleString();
+  }
+
+  function stripHtml(html) {
+    var tmp = document.createElement('div');
+    tmp.innerHTML = html || '';
+    return (tmp.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function truncate(str, max) {
+    if (str.length <= max) return str;
+    return str.slice(0, max - 1).trimEnd() + '…';
+  }
+
+  function setMeta(attr, key, value) {
+    var el = document.querySelector('meta[' + attr + '="' + key + '"]');
+    if (!el) {
+      el = document.createElement('meta');
+      el.setAttribute(attr, key);
+      document.head.appendChild(el);
+    }
+    el.setAttribute('content', value);
+  }
+
+  function setCanonical(href) {
+    var el = document.querySelector('link[rel="canonical"]');
+    if (!el) {
+      el = document.createElement('link');
+      el.setAttribute('rel', 'canonical');
+      document.head.appendChild(el);
+    }
+    el.setAttribute('href', href);
+  }
+
+  function setJsonLd(data) {
+    var el = document.getElementById('seo-jsonld');
+    if (!el) {
+      el = document.createElement('script');
+      el.type = 'application/ld+json';
+      el.id = 'seo-jsonld';
+      document.head.appendChild(el);
+    }
+    el.textContent = JSON.stringify(data);
+  }
+
+  function updateSeo(product, collection) {
+    var canonicalUrl = BASE_URL + '/product/?item=' + product.id;
+    var plainDesc = truncate(stripHtml(product.description) || product.name, 160);
+    var images = product.images.map(function (src) { return BASE_URL + src; });
+    var mainImage = images[0] || '';
+    var title = document.title;
+
+    setCanonical(canonicalUrl);
+    setMeta('name', 'description', plainDesc);
+    setMeta('name', 'robots', 'index, follow');
+
+    setMeta('property', 'og:type', 'product');
+    setMeta('property', 'og:site_name', SITE_NAME);
+    setMeta('property', 'og:locale', 'ko_KR');
+    setMeta('property', 'og:title', title);
+    setMeta('property', 'og:description', plainDesc);
+    setMeta('property', 'og:url', canonicalUrl);
+    setMeta('property', 'og:image', mainImage);
+    setMeta('property', 'og:image:alt', product.name);
+
+    setMeta('name', 'twitter:card', 'summary_large_image');
+    setMeta('name', 'twitter:title', title);
+    setMeta('name', 'twitter:description', plainDesc);
+    setMeta('name', 'twitter:image', mainImage);
+
+    setJsonLd({
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: '홈', item: BASE_URL + '/' },
+            { '@type': 'ListItem', position: 2, name: collection.label, item: BASE_URL + collection.link },
+            { '@type': 'ListItem', position: 3, name: product.name, item: canonicalUrl },
+          ],
+        },
+        {
+          '@type': 'Product',
+          name: product.name,
+          image: images,
+          description: plainDesc,
+          sku: product.id,
+          brand: { '@type': 'Brand', name: SITE_NAME },
+          offers: {
+            '@type': 'Offer',
+            url: canonicalUrl,
+            priceCurrency: 'KRW',
+            price: String(product.price),
+            availability: 'https://schema.org/InStock',
+            itemCondition: 'https://schema.org/UsedCondition',
+          },
+        },
+      ],
+    });
   }
 
   function sanitizeHtml(html) {
@@ -76,6 +177,7 @@
 
     document.title = product.name + ' — Velora Jewelry';
     setText('pageTitle', document.title);
+    updateSeo(product, collection);
 
     var crumbCollection = document.getElementById('breadcrumbCollection');
     if (crumbCollection) {
