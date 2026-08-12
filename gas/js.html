@@ -1,11 +1,24 @@
 <script>
   // ================= Config =================
-  // Product image paths are stored site-relative ("/images/products/x.jpg"),
-  // matching the convention already used by every existing product. This
-  // constant is ONLY used to build a previewable <img> src inside the admin
-  // iframe (which runs on a googleusercontent.com origin, so a relative path
-  // can't resolve there) — it is never written into saved data.
+  // Site-relative image paths ("/images/products/x.jpg") are only used ONCE
+  // a record has actually been published to GitHub. This constant is used to
+  // build a previewable <img> src for those inside the admin iframe (which
+  // runs on a googleusercontent.com origin, so a relative path can't resolve
+  // there) — it is never written into saved data.
   var SITE_BASE_URL = 'https://velorakr.com';
+
+  /**
+   * Resolves ANY stored image reference to something the admin iframe can
+   * actually display right now: a Drive preview URL (fresh upload, not yet
+   * published — already a full https:// URL, works instantly) is used as-is;
+   * a site-relative path (already published in an earlier save) gets
+   * SITE_BASE_URL prefixed. Use this everywhere an image is previewed —
+   * never build a preview src by hand.
+   */
+  function previewImageUrl(value) {
+    if (!value) return '';
+    return /^https?:\/\//.test(value) ? value : SITE_BASE_URL + value;
+  }
 
   // ================= State =================
   var TOKEN_KEY = 'velora_cms_token';
@@ -26,7 +39,7 @@
   function hideEl(id) { var el = $(id); if (el) el.classList.add('hidden'); }
   function showEl(id) { var el = $(id); if (el) el.classList.remove('hidden'); }
 
-  function showOverlay(text) { $('overlay-text').textContent = text || '처리 중...'; $('overlay').classList.remove('hidden'); }
+  function showOverlay(text) { $('overlay-text').textContent = text || 'Đang xử lý...'; $('overlay').classList.remove('hidden'); }
   function hideOverlay() { $('overlay').classList.add('hidden'); }
 
   var toastTimer = null;
@@ -58,21 +71,30 @@
   function fmtDate(iso) {
     if (!iso) return '';
     var d = new Date(iso);
-    return isNaN(d) ? String(iso) : d.toLocaleString('ko-KR');
+    return isNaN(d) ? String(iso) : d.toLocaleString('vi-VN');
   }
 
-  function fmtMoney(n) { return '₩' + (Number(n) || 0).toLocaleString('ko-KR'); }
+  function fmtMoney(n) { return '₩' + (Number(n) || 0).toLocaleString('vi-VN'); }
 
+  // Maps a status VALUE (English enum for products/posts, Vietnamese label for
+  // orders) to a CSS "kind" — decoupled so translating/renaming a status never
+  // requires a matching CSS selector change (and Vietnamese diacritics/spaces
+  // never end up baked into a class name).
+  var STATUS_BADGE_KIND = {
+    draft: 'neutral', published: 'success', sold: 'danger',
+    'Chưa thanh toán': 'neutral', 'Đang xác nhận chuyển khoản': 'warning', 'Đã thanh toán': 'success', 'Đã hoàn tiền': 'danger',
+    'Mới': 'warning', 'Đang xác nhận': 'info', 'Chuẩn bị hàng': 'info', 'Đang giao hàng': 'info', 'Hoàn thành': 'success', 'Đã huỷ': 'neutral',
+  };
   function badge(value) {
-    var cls = 'badge-status--' + String(value || '').replace(/\s+/g, '');
-    return '<span class="badge-status ' + cls + '">' + escapeHtml(value) + '</span>';
+    var kind = STATUS_BADGE_KIND[value] || 'neutral';
+    return '<span class="badge-status badge-status--' + kind + '">' + escapeHtml(value) + '</span>';
   }
 
-  function reportGithub(res, verb) {
+  function reportGithub(res, actionText) {
     if (res && res.github && res.github.ok === false) {
-      toast(verb + '되었지만 GitHub 배포에 실패했습니다: ' + res.github.error, true);
+      toast(actionText + ' nhưng đồng bộ lên GitHub thất bại: ' + res.github.error, true);
     } else {
-      toast(verb + '되었습니다.');
+      toast(actionText + '.');
     }
   }
 
@@ -132,7 +154,7 @@
     SECTIONS.forEach(function (s) { $('nav-' + s).classList.toggle('active', s === active); });
   }
 
-  var SECTION_TITLES = { products: '상품 관리', orders: '주문 관리', posts: '게시글 관리', users: '계정 관리' };
+  var SECTION_TITLES = { products: 'Quản lý sản phẩm', orders: 'Quản lý đơn hàng', posts: 'Quản lý bài viết', users: 'Quản lý tài khoản' };
 
   function showSection(name) {
     currentSection = name;
@@ -179,15 +201,15 @@
   function sendCode() {
     var email = $('login-email').value.trim();
     hideEl('login-error');
-    if (!email) { toast('이메일을 입력하세요.', true); return; }
-    showOverlay('코드를 이메일로 전송 중...');
+    if (!email) { toast('Vui lòng nhập email.', true); return; }
+    showOverlay('Đang gửi mã tới email...');
     run('requestOtp', email)
       .then(function () {
         showEl('login-code-field');
         showEl('btn-verify');
-        $('btn-send-code').textContent = '코드 재전송';
+        $('btn-send-code').textContent = 'Gửi lại mã';
         $('login-code').focus();
-        toast('코드를 전송했습니다. 메일함(스팸함 포함)을 확인하세요.');
+        toast('Đã gửi mã. Vui lòng kiểm tra hộp thư (kể cả mục Spam).');
       })
       .catch(function (e) { $('login-error').textContent = e.message; showEl('login-error'); })
       .finally(hideOverlay);
@@ -196,11 +218,11 @@
   function verifyCode() {
     var email = $('login-email').value.trim();
     var code = $('login-code').value.trim();
-    if (!code) { toast('로그인 코드를 입력하세요.', true); return; }
-    showOverlay('확인 중...');
+    if (!code) { toast('Vui lòng nhập mã đăng nhập.', true); return; }
+    showOverlay('Đang xác nhận...');
     run('verifyOtp', email, code)
       .then(function (res) {
-        if (!res || !res.me || !res.me.role) { toast('이 이메일은 접근 권한이 없습니다.', true); return; }
+        if (!res || !res.me || !res.me.role) { toast('Email này chưa được cấp quyền truy cập.', true); return; }
         TOKEN = res.token;
         try { localStorage.setItem(TOKEN_KEY, TOKEN); } catch (e) {}
         enterApp(res.me);
@@ -233,21 +255,21 @@
     document.body.classList.remove('login-mode');
     $('user-badge').innerHTML = escapeHtml(me.email) + ' &middot; <b>' + escapeHtml(me.role) + '</b>';
     showEl('btn-logout');
-    showOverlay('화면을 불러오는 중...');
+    showOverlay('Đang tải giao diện...');
     ensureAppShell()
       .then(function () {
         SECTIONS.forEach(function (s) { showEl('nav-' + s); });
         $('nav-users').classList.toggle('hidden', !isRoot());
         showSection('products');
       })
-      .catch(function (e) { toast('화면 로딩 오류: ' + e.message, true); showLogin(); })
+      .catch(function (e) { toast('Lỗi tải giao diện: ' + e.message, true); showLogin(); })
       .finally(hideOverlay);
   }
 
   // Runs once on page load: reuse a saved token so a refresh doesn't force re-login.
   (function boot() {
     if (!TOKEN) { showLogin(); return; }
-    showOverlay('세션 확인 중...');
+    showOverlay('Đang kiểm tra phiên đăng nhập...');
     run('boot', TOKEN)
       .then(function (res) {
         if (!res.me || !res.me.role) { doLogout(); return; }
@@ -265,16 +287,16 @@
 
   // ================= Products =================
   function refreshProducts() {
-    $('product-rows').innerHTML = loadingRow(7, '상품 목록을 불러오는 중...');
+    $('product-rows').innerHTML = loadingRow(7, 'Đang tải danh sách sản phẩm...');
     run('listProducts', TOKEN)
       .then(function (data) { products = data || []; renderProductRows(); })
       .catch(function (e) { $('product-rows').innerHTML = '<tr><td colspan="7" class="text-danger text-center py-4">' + escapeHtml(e.message) + '</td></tr>'; });
   }
 
   function renderProductRows() {
-    if (!products.length) { $('product-rows').innerHTML = '<tr><td colspan="7" class="text-center py-5 muted">등록된 상품이 없습니다.</td></tr>'; return; }
+    if (!products.length) { $('product-rows').innerHTML = '<tr><td colspan="7" class="text-center py-5 muted">Chưa có sản phẩm nào.</td></tr>'; return; }
     $('product-rows').innerHTML = products.map(function (p) {
-      var thumb = p.images && p.images[0] ? '<img src="' + SITE_BASE_URL + p.images[0] + '" style="width:44px;height:44px;object-fit:cover;border-radius:4px;">' : '<div class="muted">-</div>';
+      var thumb = p.images && p.images[0] ? '<img src="' + previewImageUrl(p.images[0]) + '" style="width:44px;height:44px;object-fit:cover;border-radius:4px;">' : '<div class="muted">-</div>';
       var actions = isEditor()
         ? '<button class="btn btn-sm btn-outline-primary me-1" onclick="openEditProduct(\'' + p.id + '\')"><i class="fa-solid fa-pen"></i></button>' +
           '<button class="btn btn-sm btn-outline-danger" onclick="removeProduct(\'' + p.id + '\')"><i class="fa-solid fa-trash"></i></button>'
@@ -286,29 +308,34 @@
   }
 
   function removeProduct(id) {
-    if (!confirm('이 상품을 삭제하시겠습니까? 사이트에서도 제거됩니다.')) return;
-    showOverlay('삭제 중...');
-    run('deleteProduct', TOKEN, id).then(function (res) { reportGithub(res, '삭제'); refreshProducts(); })
+    if (!confirm('Bạn có chắc muốn xoá sản phẩm này? Sản phẩm cũng sẽ bị gỡ khỏi website.')) return;
+    showOverlay('Đang xoá...');
+    run('deleteProduct', TOKEN, id).then(function (res) { reportGithub(res, 'Đã xoá'); refreshProducts(); })
       .catch(function (e) { toast(e.message, true); }).finally(hideOverlay);
   }
 
   function openNewProduct() {
-    currentProduct = { id: '', images: [] };
+    currentProduct = { id: '', isNew: true, images: [] };
     fillProductForm(currentProduct, true);
     enterEditorView('view-product-editor');
   }
 
   function openEditProduct(id) {
-    showOverlay('불러오는 중...');
+    showOverlay('Đang tải...');
     run('getProduct', TOKEN, id)
-      .then(function (p) { currentProduct = p; fillProductForm(p, false); enterEditorView('view-product-editor'); })
+      .then(function (p) {
+        currentProduct = Object.assign({ isNew: false }, p);
+        fillProductForm(p, false);
+        enterEditorView('view-product-editor');
+      })
       .catch(function (e) { toast(e.message, true); })
       .finally(hideOverlay);
   }
 
   function fillProductForm(p, isNew) {
     $('pr-name').value = p.name || '';
-    $('pr-id').value = p.id || '(저장 시 자동 생성)';
+    $('pr-id').value = p.id || '';
+    $('pr-id').disabled = !isNew || !isEditor(); // slug is only editable while creating; locked once saved
     $('pr-category').value = p.category || 'jewelry';
     $('pr-price').value = p.price || '';
     $('pr-status').value = p.status || 'draft';
@@ -322,11 +349,14 @@
 
   function renderProductImageGrid() {
     var grid = $('product-image-grid');
-    grid.innerHTML = (currentProduct.images || []).map(function (path, i) {
+    // Each item is either a string (already published, e.g. "/images/products/x-01.jpg")
+    // or {driveId, ext, url} (freshly uploaded this session, staged in Drive, not yet published).
+    grid.innerHTML = (currentProduct.images || []).map(function (img, i) {
+      var src = typeof img === 'string' ? previewImageUrl(img) : img.url;
       var remove = isEditor() ? '<button class="gallery-remove" onclick="removeProductImage(' + i + ')">&times;</button>' : '';
-      var coverBadge = i === 0 ? '<span class="gallery-badge">대표</span>' : '';
+      var coverBadge = i === 0 ? '<span class="gallery-badge">Ảnh đại diện</span>' : '';
       return '<div class="gallery-item' + (i === 0 ? ' gallery-item--cover' : '') + '">' +
-        '<img src="' + SITE_BASE_URL + path + '">' + coverBadge + remove + '</div>';
+        '<img src="' + src + '">' + coverBadge + remove + '</div>';
     }).join('');
   }
 
@@ -335,48 +365,65 @@
     renderProductImageGrid();
   }
 
-  /** Resolves the product id to use for image uploads, reserving one from the name if needed. */
+  var SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+  function slugify(str) {
+    return String(str || '')
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // strip Vietnamese/other accents
+      .replace(/đ/g, 'd')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  /** Resolves the product id to use for image uploads from whatever is currently in the ID field. */
   function ensureProductId() {
-    if (currentProduct.id) return Promise.resolve(currentProduct.id);
-    var name = $('pr-name').value.trim();
-    if (!name) { toast('상품명을 먼저 입력하세요.', true); return Promise.reject(new Error('no name')); }
-    return run('reserveProductId', TOKEN, name).then(function (res) {
-      currentProduct.id = res.id;
-      $('pr-id').value = res.id;
-      return res.id;
-    });
+    var id = $('pr-id').value.trim();
+    if (!id) {
+      var name = $('pr-name').value.trim();
+      if (!name) { toast('Vui lòng nhập tên sản phẩm hoặc ID trước.', true); return Promise.reject(new Error('no id')); }
+      id = slugify(name);
+      $('pr-id').value = id;
+    }
+    if (!SLUG_RE.test(id)) {
+      toast('ID sản phẩm chỉ được chứa chữ thường a-z, số 0-9 và dấu gạch ngang.', true);
+      return Promise.reject(new Error('no id'));
+    }
+    currentProduct.id = id;
+    return Promise.resolve(id);
   }
 
   function uploadProductImages(fileList) {
     var files = Array.prototype.slice.call(fileList);
     if (!files.length) return;
     ensureProductId().then(function (id) {
-      $('product-image-status').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>업로드 중...';
-      var startIndex = currentProduct.images.length;
-      var uploads = files.map(function (file, i) {
+      $('product-image-status').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang tải lên Drive để xem trước...';
+      var uploads = files.map(function (file) {
         return compressImage(file).then(function (small) {
           return blobToBase64(small).then(function (base64) {
-            return run('uploadProductImage', TOKEN, id, startIndex + i + 1, base64, small.type);
+            return run('uploadProductImage', TOKEN, id, base64, small.type);
           });
         });
       });
+      // {driveId, ext, url} — staged in Drive only; becomes a real GitHub path when the product is saved.
       return Promise.all(uploads).then(function (results) {
-        results.forEach(function (r) { currentProduct.images.push(r.path); });
+        results.forEach(function (r) { currentProduct.images.push(r); });
         renderProductImageGrid();
         $('product-image-status').textContent = '';
       });
     }).catch(function (e) {
-      if (e.message !== 'no name') toast('이미지 업로드 실패: ' + e.message, true);
+      if (e.message !== 'no id') toast('Tải ảnh lên thất bại: ' + e.message, true);
       $('product-image-status').textContent = '';
     });
   }
 
   function saveProductAction() {
     var name = $('pr-name').value.trim();
-    if (!name) { toast('상품명을 입력하세요.', true); return; }
+    if (!name) { toast('Vui lòng nhập tên sản phẩm.', true); return; }
     ensureProductId().then(function (id) {
       var payload = {
         id: id,
+        isNew: !!currentProduct.isNew,
         name: name,
         category: $('pr-category').value,
         price: Number($('pr-price').value),
@@ -384,26 +431,26 @@
         images: currentProduct.images,
         description: tinymce.get('product-content-editor').getContent(),
       };
-      showOverlay('저장 중...');
+      showOverlay('Đang lưu...');
       return run('saveProduct', TOKEN, payload).then(function (res) {
-        reportGithub(res, '저장');
+        reportGithub(res, 'Đã lưu');
         backToList();
       });
     }).catch(function (e) {
-      if (e.message !== 'no name') toast(e.message, true);
+      if (e.message !== 'no id') toast(e.message, true);
     }).finally(hideOverlay);
   }
 
   // ================= Orders =================
   function refreshOrders() {
-    $('order-rows').innerHTML = loadingRow(8, '주문 목록을 불러오는 중...');
+    $('order-rows').innerHTML = loadingRow(8, 'Đang tải danh sách đơn hàng...');
     run('listOrders', TOKEN)
       .then(function (data) { orders = data || []; renderOrderRows(); })
       .catch(function (e) { $('order-rows').innerHTML = '<tr><td colspan="8" class="text-danger text-center py-4">' + escapeHtml(e.message) + '</td></tr>'; });
   }
 
   function renderOrderRows() {
-    if (!orders.length) { $('order-rows').innerHTML = '<tr><td colspan="8" class="text-center py-5 muted">등록된 주문이 없습니다.</td></tr>'; return; }
+    if (!orders.length) { $('order-rows').innerHTML = '<tr><td colspan="8" class="text-center py-5 muted">Chưa có đơn hàng nào.</td></tr>'; return; }
     $('order-rows').innerHTML = orders.map(function (o) {
       var actions = isEditor()
         ? '<button class="btn btn-sm btn-outline-primary me-1" onclick="openEditOrder(\'' + o.id + '\')"><i class="fa-solid fa-pen"></i></button>' +
@@ -417,9 +464,9 @@
   }
 
   function removeOrder(id) {
-    if (!confirm('이 주문을 삭제하시겠습니까?')) return;
-    showOverlay('삭제 중...');
-    run('deleteOrder', TOKEN, id).then(function () { toast('삭제되었습니다.'); refreshOrders(); })
+    if (!confirm('Bạn có chắc muốn xoá đơn hàng này?')) return;
+    showOverlay('Đang xoá...');
+    run('deleteOrder', TOKEN, id).then(function () { toast('Đã xoá.'); refreshOrders(); })
       .catch(function (e) { toast(e.message, true); }).finally(hideOverlay);
   }
 
@@ -430,7 +477,7 @@
   }
 
   function openEditOrder(id) {
-    showOverlay('불러오는 중...');
+    showOverlay('Đang tải...');
     run('getOrder', TOKEN, id)
       .then(function (o) { currentOrder = o; fillOrderForm(o, false); enterEditorView('view-order-editor'); })
       .catch(function (e) { toast(e.message, true); })
@@ -444,9 +491,9 @@
     $('or-customer-instagram').value = o.customerInstagram || '';
     $('or-address').value = o.shippingAddress || '';
     $('or-discount').value = o.discount || 0;
-    $('or-payment-method').value = o.paymentMethod || '카카오페이';
-    $('or-payment-status').value = o.paymentStatus || '미결제';
-    $('or-status').value = o.orderStatus || '신규';
+    $('or-payment-method').value = o.paymentMethod || '';
+    $('or-payment-status').value = o.paymentStatus || 'Chưa thanh toán';
+    $('or-status').value = o.orderStatus || 'Mới';
     $('or-tracking').value = o.trackingNumber || '';
     $('or-note').value = o.note || '';
     $('order-items').innerHTML = '';
@@ -464,9 +511,9 @@
     var row = document.createElement('div');
     row.className = 'order-item-row';
     row.innerHTML =
-      '<input type="text" class="form-control" placeholder="상품명" value="' + escapeHtml(name || '') + '" data-role="name">' +
-      '<input type="number" class="form-control" placeholder="가격" min="0" step="1000" value="' + (price || '') + '" data-role="price" oninput="recalcOrderTotal()">' +
-      '<input type="number" class="form-control" placeholder="수량" min="1" step="1" value="' + (qty || 1) + '" data-role="qty" oninput="recalcOrderTotal()">' +
+      '<input type="text" class="form-control" placeholder="Tên sản phẩm" value="' + escapeHtml(name || '') + '" data-role="name">' +
+      '<input type="number" class="form-control" placeholder="Giá" min="0" step="1000" value="' + (price || '') + '" data-role="price" oninput="recalcOrderTotal()">' +
+      '<input type="number" class="form-control" placeholder="Số lượng" min="1" step="1" value="' + (qty || 1) + '" data-role="qty" oninput="recalcOrderTotal()">' +
       '<button type="button" class="btn btn-sm btn-outline-danger" onclick="this.parentElement.remove(); recalcOrderTotal();">&times;</button>';
     $('order-items').appendChild(row);
   }
@@ -489,8 +536,8 @@
 
   function saveOrderAction() {
     var items = collectOrderItems();
-    if (!$('or-customer-name').value.trim()) { toast('고객명을 입력하세요.', true); return; }
-    if (!items.length) { toast('최소 1개 이상의 상품을 추가하세요.', true); return; }
+    if (!$('or-customer-name').value.trim()) { toast('Vui lòng nhập tên khách hàng.', true); return; }
+    if (!items.length) { toast('Vui lòng thêm ít nhất 1 sản phẩm.', true); return; }
     var payload = {
       id: currentOrder.id || '',
       customerName: $('or-customer-name').value.trim(),
@@ -506,25 +553,25 @@
       trackingNumber: $('or-tracking').value.trim(),
       note: $('or-note').value.trim(),
     };
-    showOverlay('저장 중...');
+    showOverlay('Đang lưu...');
     run('saveOrder', TOKEN, payload)
-      .then(function () { toast('저장되었습니다.'); backToList(); })
+      .then(function () { toast('Đã lưu.'); backToList(); })
       .catch(function (e) { toast(e.message, true); })
       .finally(hideOverlay);
   }
 
   // ================= Posts =================
   function refreshPosts() {
-    $('post-rows').innerHTML = loadingRow(6, '게시글 목록을 불러오는 중...');
+    $('post-rows').innerHTML = loadingRow(6, 'Đang tải danh sách bài viết...');
     run('listPosts', TOKEN)
       .then(function (data) { posts = data || []; renderPostRows(); })
       .catch(function (e) { $('post-rows').innerHTML = '<tr><td colspan="6" class="text-danger text-center py-4">' + escapeHtml(e.message) + '</td></tr>'; });
   }
 
   function renderPostRows() {
-    if (!posts.length) { $('post-rows').innerHTML = '<tr><td colspan="6" class="text-center py-5 muted">등록된 게시글이 없습니다.</td></tr>'; return; }
+    if (!posts.length) { $('post-rows').innerHTML = '<tr><td colspan="6" class="text-center py-5 muted">Chưa có bài viết nào.</td></tr>'; return; }
     $('post-rows').innerHTML = posts.map(function (p) {
-      var thumb = p.coverImage ? '<img src="' + SITE_BASE_URL + p.coverImage + '" style="width:44px;height:44px;object-fit:cover;border-radius:4px;">' : '<div class="muted">-</div>';
+      var thumb = p.coverImage ? '<img src="' + previewImageUrl(p.coverImage) + '" style="width:44px;height:44px;object-fit:cover;border-radius:4px;">' : '<div class="muted">-</div>';
       var actions = isEditor()
         ? '<button class="btn btn-sm btn-outline-primary me-1" onclick="openEditPost(\'' + p.id + '\')"><i class="fa-solid fa-pen"></i></button>' +
           '<button class="btn btn-sm btn-outline-danger" onclick="removePost(\'' + p.id + '\')"><i class="fa-solid fa-trash"></i></button>'
@@ -536,22 +583,26 @@
   }
 
   function removePost(id) {
-    if (!confirm('이 게시글을 삭제하시겠습니까? 사이트에서도 제거됩니다.')) return;
-    showOverlay('삭제 중...');
-    run('deletePost', TOKEN, id).then(function (res) { reportGithub(res, '삭제'); refreshPosts(); })
+    if (!confirm('Bạn có chắc muốn xoá bài viết này? Bài viết cũng sẽ bị gỡ khỏi website.')) return;
+    showOverlay('Đang xoá...');
+    run('deletePost', TOKEN, id).then(function (res) { reportGithub(res, 'Đã xoá'); refreshPosts(); })
       .catch(function (e) { toast(e.message, true); }).finally(hideOverlay);
   }
 
   function openNewPost() {
-    currentPost = { id: '', coverImage: '' };
+    currentPost = { id: '', isNew: true, coverImage: '' };
     fillPostForm(currentPost, true);
     enterEditorView('view-post-editor');
   }
 
   function openEditPost(id) {
-    showOverlay('불러오는 중...');
+    showOverlay('Đang tải...');
     run('getPost', TOKEN, id)
-      .then(function (p) { currentPost = p; fillPostForm(p, false); enterEditorView('view-post-editor'); })
+      .then(function (p) {
+        currentPost = Object.assign({ isNew: false }, p);
+        fillPostForm(p, false);
+        enterEditorView('view-post-editor');
+      })
       .catch(function (e) { toast(e.message, true); })
       .finally(hideOverlay);
   }
@@ -575,30 +626,30 @@
     };
   }
 
+  // TinyMCE shows this URL immediately as the inline image's src — a Drive
+  // link works right away, so no "broken image" flash while the upload is
+  // in flight. It's pushed to GitHub and rewritten to the final path only
+  // when the post is saved (publishPostContentImages_ on the server).
   function currentPostImageUploadHandler(blobInfo) {
     return ensurePostId().then(function (id) {
       return compressImage(blobInfo.blob()).then(function (small) {
         return blobToBase64(small).then(function (base64) {
           return run('uploadPostImage', TOKEN, id, base64, small.type, blobInfo.filename())
-            .then(function (res) { return SITE_BASE_URL + res.path; });
+            .then(function (res) { return res.url; });
         });
       });
     });
   }
 
-  /** Strips the admin-preview absolute prefix back to a site-relative path before saving. */
-  function toRelativeContentUrls(html) {
-    return (html || '').split(SITE_BASE_URL).join('');
-  }
-
   function fillPostForm(p, isNew) {
     $('ps-title').value = p.title || '';
-    $('ps-id').value = p.id || '(저장 시 자동 생성)';
+    $('ps-id').value = p.id || '';
+    $('ps-id').disabled = !isNew || !isEditor(); // slug is only editable while creating; locked once saved
     $('ps-excerpt').value = p.excerpt || '';
     $('ps-status').value = p.status || 'draft';
     $('ps-published-at').value = p.publishedAt || new Date().toISOString().slice(0, 10);
     if (p.coverImage) {
-      $('post-cover-preview').src = SITE_BASE_URL + p.coverImage;
+      $('post-cover-preview').src = previewImageUrl(p.coverImage);
       $('post-cover-preview').classList.remove('hidden');
     } else {
       $('post-cover-preview').classList.add('hidden');
@@ -612,22 +663,28 @@
     $('post-readonly-note').classList.toggle('hidden', isEditor());
   }
 
+  /** Resolves the post id to use for image uploads from whatever is currently in the ID field. */
   function ensurePostId() {
-    if (currentPost.id) return Promise.resolve(currentPost.id);
-    var title = $('ps-title').value.trim();
-    if (!title) { toast('제목을 먼저 입력하세요.', true); return Promise.reject(new Error('no title')); }
-    return run('reservePostId', TOKEN, title).then(function (res) {
-      currentPost.id = res.id;
-      $('ps-id').value = res.id;
-      return res.id;
-    });
+    var id = $('ps-id').value.trim();
+    if (!id) {
+      var title = $('ps-title').value.trim();
+      if (!title) { toast('Vui lòng nhập tiêu đề hoặc ID trước.', true); return Promise.reject(new Error('no id')); }
+      id = slugify(title);
+      $('ps-id').value = id;
+    }
+    if (!SLUG_RE.test(id)) {
+      toast('ID bài viết chỉ được chứa chữ thường a-z, số 0-9 và dấu gạch ngang.', true);
+      return Promise.reject(new Error('no id'));
+    }
+    currentPost.id = id;
+    return Promise.resolve(id);
   }
 
   function uploadPostCover(file) {
     ensurePostId().then(function (id) {
       $('post-cover-preview').src = URL.createObjectURL(file);
       $('post-cover-preview').classList.remove('hidden');
-      $('post-cover-status').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>업로드 중...';
+      $('post-cover-status').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang tải lên...';
       return compressImage(file).then(function (small) {
         return blobToBase64(small).then(function (base64) {
           return run('uploadPostImage', TOKEN, id, base64, small.type, file.name);
@@ -635,48 +692,50 @@
       });
     }).then(function (res) {
       if (!res) return;
-      currentPost.coverImage = res.path;
-      $('post-cover-status').textContent = '업로드 완료';
+      currentPost.coverImage = res.url;
+      $('post-cover-preview').src = res.url; // swap the local blob preview for the real (already-viewable) Drive one
+      $('post-cover-status').textContent = 'Đã tải lên xong';
     }).catch(function (e) {
-      if (e.message !== 'no title') toast('커버 업로드 실패: ' + e.message, true);
+      if (e.message !== 'no id') toast('Tải ảnh bìa thất bại: ' + e.message, true);
       $('post-cover-status').textContent = '';
     });
   }
 
   function savePostAction() {
     var title = $('ps-title').value.trim();
-    if (!title) { toast('제목을 입력하세요.', true); return; }
+    if (!title) { toast('Vui lòng nhập tiêu đề.', true); return; }
     ensurePostId().then(function (id) {
       var payload = {
         id: id,
+        isNew: !!currentPost.isNew,
         title: title,
         excerpt: $('ps-excerpt').value.trim(),
         coverImage: currentPost.coverImage || '',
-        content: toRelativeContentUrls(tinymce.get('post-content-editor').getContent()),
+        content: tinymce.get('post-content-editor').getContent(),
         status: $('ps-status').value,
         publishedAt: $('ps-published-at').value,
       };
-      showOverlay('저장 중...');
+      showOverlay('Đang lưu...');
       return run('savePost', TOKEN, payload).then(function (res) {
-        reportGithub(res, '저장');
+        reportGithub(res, 'Đã lưu');
         backToList();
       });
     }).catch(function (e) {
-      if (e.message !== 'no title') toast(e.message, true);
+      if (e.message !== 'no id') toast(e.message, true);
     }).finally(hideOverlay);
   }
 
   // ================= Users (root only) =================
   function refreshUsers() {
     if (!isRoot()) return;
-    $('user-rows').innerHTML = loadingRow(4, '계정 목록을 불러오는 중...');
+    $('user-rows').innerHTML = loadingRow(4, 'Đang tải danh sách tài khoản...');
     run('listUsers', TOKEN)
       .then(function (data) { users = data || []; renderUserRows(); })
       .catch(function (e) { $('user-rows').innerHTML = '<tr><td colspan="4" class="text-danger text-center py-4">' + escapeHtml(e.message) + '</td></tr>'; });
   }
 
   function renderUserRows() {
-    if (!users.length) { $('user-rows').innerHTML = '<tr><td colspan="4" class="text-center py-5 muted">등록된 계정이 없습니다.</td></tr>'; return; }
+    if (!users.length) { $('user-rows').innerHTML = '<tr><td colspan="4" class="text-center py-5 muted">Chưa có tài khoản nào.</td></tr>'; return; }
     $('user-rows').innerHTML = users.map(function (u) {
       var roleCell = u.editable
         ? '<select class="form-select form-select-sm" onchange="changeUserRole(\'' + u.email + '\', this.value)">' +
@@ -691,27 +750,27 @@
   function addUserAction() {
     var email = $('us-email').value.trim();
     var role = $('us-role').value;
-    if (!email) { toast('이메일을 입력하세요.', true); return; }
-    showOverlay('추가 중...');
+    if (!email) { toast('Vui lòng nhập email.', true); return; }
+    showOverlay('Đang thêm...');
     run('addUser', TOKEN, email, role)
-      .then(function () { $('us-email').value = ''; toast('추가되었습니다.'); refreshUsers(); })
+      .then(function () { $('us-email').value = ''; toast('Đã thêm.'); refreshUsers(); })
       .catch(function (e) { toast(e.message, true); })
       .finally(hideOverlay);
   }
 
   function changeUserRole(email, role) {
-    showOverlay('변경 중...');
+    showOverlay('Đang cập nhật...');
     run('updateUserRole', TOKEN, email, role)
-      .then(function () { toast('변경되었습니다.'); })
+      .then(function () { toast('Đã cập nhật.'); })
       .catch(function (e) { toast(e.message, true); refreshUsers(); })
       .finally(hideOverlay);
   }
 
   function removeUser(email) {
-    if (!confirm(email + ' 계정을 삭제하시겠습니까?')) return;
-    showOverlay('삭제 중...');
+    if (!confirm('Bạn có chắc muốn xoá tài khoản ' + email + '?')) return;
+    showOverlay('Đang xoá...');
     run('deleteUser', TOKEN, email)
-      .then(function () { toast('삭제되었습니다.'); refreshUsers(); })
+      .then(function () { toast('Đã xoá.'); refreshUsers(); })
       .catch(function (e) { toast(e.message, true); })
       .finally(hideOverlay);
   }

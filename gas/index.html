@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
   <base target="_top">
   <meta charset="utf-8">
@@ -12,39 +12,39 @@
     <aside class="sidebar">
       <div class="brand"><i class="fa-solid fa-gem me-2"></i>Velora Admin</div>
       <nav class="mt-2">
-        <a href="#" id="nav-products" class="active" onclick="showSection('products'); return false;"><i class="fa-solid fa-box"></i>상품 관리</a>
-        <a href="#" id="nav-orders" onclick="showSection('orders'); return false;"><i class="fa-solid fa-receipt"></i>주문 관리</a>
-        <a href="#" id="nav-posts" onclick="showSection('posts'); return false;"><i class="fa-solid fa-file-lines"></i>게시글 관리</a>
-        <a href="#" id="nav-users" class="hidden" onclick="showSection('users'); return false;"><i class="fa-solid fa-users"></i>계정 관리</a>
+        <a href="#" id="nav-products" class="active" onclick="showSection('products'); return false;"><i class="fa-solid fa-box"></i>Quản lý sản phẩm</a>
+        <a href="#" id="nav-orders" onclick="showSection('orders'); return false;"><i class="fa-solid fa-receipt"></i>Quản lý đơn hàng</a>
+        <a href="#" id="nav-posts" onclick="showSection('posts'); return false;"><i class="fa-solid fa-file-lines"></i>Quản lý bài viết</a>
+        <a href="#" id="nav-users" class="hidden" onclick="showSection('users'); return false;"><i class="fa-solid fa-users"></i>Quản lý tài khoản</a>
       </nav>
     </aside>
 
     <div class="main flex-grow-1">
       <header class="topbar">
-        <strong id="page-title">상품 관리</strong>
+        <strong id="page-title">Quản lý sản phẩm</strong>
         <span id="user-badge" class="user-badge"></span>
-        <button id="btn-new" class="btn btn-primary btn-sm hidden" onclick="openNewForCurrentSection()"><i class="fa-solid fa-plus me-1"></i>새로 추가</button>
-        <button id="btn-back" class="btn btn-outline-secondary btn-sm hidden" onclick="backToList()"><i class="fa-solid fa-arrow-left me-1"></i>목록으로</button>
-        <button id="btn-logout" class="btn btn-outline-secondary btn-sm hidden" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket me-1"></i>로그아웃</button>
+        <button id="btn-new" class="btn btn-primary btn-sm hidden" onclick="openNewForCurrentSection()"><i class="fa-solid fa-plus me-1"></i>Thêm mới</button>
+        <button id="btn-back" class="btn btn-outline-secondary btn-sm hidden" onclick="backToList()"><i class="fa-solid fa-arrow-left me-1"></i>Về danh sách</button>
+        <button id="btn-logout" class="btn btn-outline-secondary btn-sm hidden" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket me-1"></i>Đăng xuất</button>
       </header>
 
       <main id="view-login" class="content-wrap">
         <div class="card mx-auto shadow-sm" style="max-width: 420px;">
           <div class="card-body">
-            <h5 class="card-title mb-1"><i class="fa-solid fa-lock me-2"></i>로그인</h5>
-            <p class="text-muted small mb-3">등록된 이메일로 로그인 코드를 보내드립니다.</p>
+            <h5 class="card-title mb-1"><i class="fa-solid fa-lock me-2"></i>Đăng nhập</h5>
+            <p class="text-muted small mb-3">Chúng tôi sẽ gửi mã đăng nhập tới email đã được cấp quyền.</p>
             <div class="mb-3">
-              <label class="form-label" for="login-email">이메일</label>
+              <label class="form-label" for="login-email">Email</label>
               <input type="email" id="login-email" class="form-control" placeholder="you@example.com" autocomplete="email">
             </div>
             <div class="mb-3 hidden" id="login-code-field">
-              <label class="form-label" for="login-code">로그인 코드 (이메일로 발송됨)</label>
-              <input type="text" id="login-code" class="form-control" placeholder="6자리 숫자" inputmode="numeric" maxlength="6">
+              <label class="form-label" for="login-code">Mã đăng nhập (đã gửi qua email)</label>
+              <input type="text" id="login-code" class="form-control" placeholder="6 chữ số" inputmode="numeric" maxlength="6">
             </div>
             <div id="login-error" class="alert alert-danger py-2 small hidden"></div>
             <div class="d-flex gap-2">
-              <button class="btn btn-primary" id="btn-send-code" onclick="sendCode()"><i class="fa-solid fa-paper-plane me-1"></i>코드 전송</button>
-              <button class="btn btn-success hidden" id="btn-verify" onclick="verifyCode()"><i class="fa-solid fa-check me-1"></i>확인</button>
+              <button class="btn btn-primary" id="btn-send-code" onclick="sendCode()"><i class="fa-solid fa-paper-plane me-1"></i>Gửi mã</button>
+              <button class="btn btn-success hidden" id="btn-verify" onclick="verifyCode()"><i class="fa-solid fa-check me-1"></i>Xác nhận</button>
             </div>
           </div>
         </div>
@@ -54,7 +54,7 @@
     </div>
   </div>
 
-  <div id="overlay" class="overlay hidden"><div class="spinner"></div><span id="overlay-text">처리 중...</span></div>
+  <div id="overlay" class="overlay hidden"><div class="spinner"></div><span id="overlay-text">Đang xử lý...</span></div>
   <div id="toast" class="toast-msg hidden"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/tinymce@6.8.5/tinymce.min.js"></script>

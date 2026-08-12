@@ -245,6 +245,7 @@ def write_robots():
         "Allow: /\n"
         "Disallow: /cart/\n"
         "Disallow: /wishlist/\n"
+        "Disallow: /admin/\n"
         f"Sitemap: {BASE_URL}/sitemap.xml\n"
     )
     (ROOT / "robots.txt").write_text(content, encoding="utf-8")
