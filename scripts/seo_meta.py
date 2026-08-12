@@ -254,6 +254,8 @@ def write_sitemap():
     products = json.loads(
         (ROOT / "products-data.js").read_text(encoding="utf-8").split("=", 1)[1].rstrip(";\n")
     )
+    news_index_path = ROOT.parent / "data" / "news.json"
+    news_posts = json.loads(news_index_path.read_text(encoding="utf-8")) if news_index_path.exists() else []
 
     urls: list[tuple[str, str]] = []
     for page in PAGES:
@@ -274,6 +276,10 @@ def write_sitemap():
     entries += "\n" + "\n".join(
         f'  <url>\n    <loc>{abs_url("/products/" + prod["id"] + "/")}</loc>\n    <changefreq>weekly</changefreq>\n  </url>'
         for prod in products
+    )
+    entries += "\n" + "\n".join(
+        f'  <url>\n    <loc>{abs_url("/news/" + post["id"] + "/")}</loc>\n    <changefreq>monthly</changefreq>\n  </url>'
+        for post in news_posts
     )
 
     sitemap = (

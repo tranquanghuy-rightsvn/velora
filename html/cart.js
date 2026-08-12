@@ -92,6 +92,58 @@
     errEl.style.display = msg ? '' : 'none';
   }
 
+  var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  /** Reads + validates the shipping-info fields. Returns null (and shows an error) if invalid. */
+  function collectCheckoutInfo() {
+    var name = (document.getElementById('checkoutName') || {}).value || '';
+    var phone = (document.getElementById('checkoutPhone') || {}).value || '';
+    var email = (document.getElementById('checkoutEmail') || {}).value || '';
+    var address = (document.getElementById('checkoutAddress') || {}).value || '';
+    var website = (document.getElementById('checkoutWebsite') || {}).value || ''; // honeypot
+    name = name.trim(); phone = phone.trim(); email = email.trim(); address = address.trim();
+
+    if (!name) { showPaymentError('성함을 입력해주세요.'); return null; }
+    if (!phone) { showPaymentError('연락처를 입력해주세요.'); return null; }
+    if (!email || !EMAIL_RE.test(email)) { showPaymentError('올바른 이메일 주소를 입력해주세요.'); return null; }
+    if (!address) { showPaymentError('배송지 주소를 입력해주세요.'); return null; }
+    return { name: name, phone: phone, email: email, address: address, website: website };
+  }
+
+  /** Posts the order to the GAS admin backend so staff can see it under 주문 관리. */
+  function submitOrder(info, items, paymentMethod) {
+    var endpoint = window.VELORA_CHECKOUT_ENDPOINT;
+    if (!endpoint || endpoint.indexOf('REPLACE_WITH') !== -1) {
+      return Promise.reject(new Error('결제 확정 기능이 아직 준비 중입니다. 인스타그램 DM으로 문의해주세요.'));
+    }
+    var payload = {
+      action: 'submitOrder',
+      customerName: info.name,
+      customerPhone: info.phone,
+      customerEmail: info.email,
+      shippingAddress: info.address,
+      paymentMethod: paymentMethod,
+      items: items.map(function (it) { return { name: it.name, price: it.price, qty: it.qty }; }),
+      website: info.website,
+    };
+    return fetch(endpoint, {
+      method: 'POST',
+      // text/plain keeps this a CORS "simple request" — GAS doPost can't handle
+      // a preflight OPTIONS request, so application/json would fail here.
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
+    })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (!data || data.ok !== true) throw new Error((data && data.error) || '주문 접수에 실패했습니다.');
+        return data;
+      })
+      .catch(function (e) {
+        if (e instanceof TypeError) throw new Error('네트워크 오류로 주문 접수에 실패했습니다. 다시 시도해주세요.');
+        throw e;
+      });
+  }
+
   function showCheckoutSuccessPopup() {
     var overlay = document.getElementById('checkoutSuccessOverlay');
     var popup;
@@ -150,7 +202,39 @@
     showCheckoutSuccessPopup();
   }
 
+  function initPaymentChoiceToggle() {
+    var radios = document.querySelectorAll('input[name="cartPaymentChoice"]');
+    if (!radios.length) return;
+    var panels = document.querySelectorAll('[data-payment-panel]');
+    var sync = function () {
+      var selected = document.querySelector('input[name="cartPaymentChoice"]:checked');
+      var value = selected ? selected.value : '';
+      panels.forEach(function (panel) {
+        panel.hidden = panel.getAttribute('data-payment-panel') !== value;
+      });
+      showPaymentError('');
+    };
+    radios.forEach(function (radio) { radio.addEventListener('change', sync); });
+    sync();
+  }
+
+  function initInstaClearCartLink() {
+    var link = document.getElementById('clearCartInstaLink');
+    if (!link) return;
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (!getCart().length) return;
+      saveCart([]);
+      updateBadges();
+      renderCartPage();
+      showToast('장바구니가 삭제되었습니다');
+    });
+  }
+
   function initPaymentActions() {
+    initPaymentChoiceToggle();
+    initInstaClearCartLink();
+
     var copyBtn = document.getElementById('copyAccountBtn');
     if (copyBtn) {
       copyBtn.addEventListener('click', function () {
@@ -170,11 +254,28 @@
     var confirmBtn = document.getElementById('confirmBankTransferBtn');
     if (confirmBtn) {
       confirmBtn.addEventListener('click', function () {
-        if (!getCart().length) return;
+        var items = getCart();
+        if (!items.length) return;
         showPaymentError('');
-        saveCart([]);
-        updateBadges();
-        showCheckoutSuccess();
+        var info = collectCheckoutInfo();
+        if (!info) return;
+
+        var originalLabel = confirmBtn.textContent;
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = '처리 중...';
+        submitOrder(info, items, '계좌이체')
+          .then(function () {
+            saveCart([]);
+            updateBadges();
+            showCheckoutSuccess();
+          })
+          .catch(function (e) {
+            showPaymentError(e.message || '주문 접수에 실패했습니다. 잠시 후 다시 시도해주세요.');
+          })
+          .finally(function () {
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = originalLabel;
+          });
       });
     }
   }

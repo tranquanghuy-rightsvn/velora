@@ -1,0 +1,51 @@
+name: Build static site from CMS data
+
+# Trigger only on the "commit chốt" (final/index) file of each entity, not
+# on data/** broadly — a single CMS save/delete can push several commits in
+# a row (images, then a per-record file, then the index file last). Building
+# on an earlier commit in that sequence would generate the site from a
+# half-updated state. See docs/research or the free-cms-static-site-pipeline
+# skill's static-site-build.md for the full rationale.
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "data/products.json"
+      - "data/news.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-static-site
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install beautifulsoup4
+
+      - name: Build site from data/
+        run: python3 scripts/build.py
+
+      - name: Commit generated html/
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add html/
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "CI: build html from data"
+            git push
+          fi

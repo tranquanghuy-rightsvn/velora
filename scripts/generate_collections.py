@@ -40,6 +40,7 @@ from seo_common import (  # noqa: E402
     breadcrumb_jsonld,
     classify_jewelry_subcategory,
     classify_watch_subcategory,
+    esc,
     money,
 )
 
@@ -109,19 +110,20 @@ def build_pages(products: list[dict]) -> list[dict]:
 def product_card_html(p: dict) -> str:
     img = p["images"][0] if p["images"] else ""
     link = f'/products/{p["id"]}/'
+    name = esc(p["name"])
     return (
         '        <div class="product-card">\n'
         '          <div class="product-card__media">\n'
         f'            <button class="pcard__wish" aria-label="위시리스트 추가" data-wish-id="{p["id"]}" '
-        f'data-wish-name="{p["name"]}" data-wish-image="{img}" data-wish-link="{link}">\n'
+        f'data-wish-name="{name}" data-wish-image="{img}" data-wish-link="{link}">\n'
         '              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">'
         '<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>\n'
         '            </button>\n'
-        f'            <a href="{link}"><img src="{img}" alt="{p["name"]}" loading="lazy" /></a>\n'
+        f'            <a href="{link}"><img src="{img}" alt="{name}" loading="lazy" /></a>\n'
         '            <span class="product-card__badge">정품 · 프리러브드</span>\n'
         '          </div>\n'
         '          <div class="product-card__info">\n'
-        f'            <a href="{link}" class="product-card__name">{p["name"]}</a>\n'
+        f'            <a href="{link}" class="product-card__name">{name}</a>\n'
         f'            <p class="product-card__price">{money(p["price"])}</p>\n'
         f'            <a href="{link}" class="pcard__cta">장바구니 담기</a>\n'
         '          </div>\n'

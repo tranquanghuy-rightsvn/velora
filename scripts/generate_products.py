@@ -26,7 +26,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from seo_common import BASE_URL, SITE_NAME, COLLECTION, abs_url, breadcrumb_jsonld, money  # noqa: E402
+from seo_common import BASE_URL, SITE_NAME, COLLECTION, abs_url, breadcrumb_jsonld, esc, money  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent / "html"
 PRODUCTS_DIR = ROOT / "products"
@@ -79,25 +79,26 @@ def pick_related(product: dict, products: list[dict], limit: int = 8) -> list[di
 def thumb_html(src: str, alt: str, active: bool) -> str:
     cls = "product-gallery__thumb" + (" product-gallery__thumb--active" if active else "")
     loading = "" if active else ' loading="lazy"'
-    return f'<button class="{cls}"><img{loading} src="{src}" alt="{alt}" /></button>'
+    return f'<button class="{cls}"><img{loading} src="{src}" alt="{esc(alt)}" /></button>'
 
 
 def pcard_html(p: dict) -> str:
     img = p["images"][0] if p["images"] else ""
     link = f'/products/{p["id"]}/'
+    name = esc(p["name"])
     return (
         '<div class="pcard">'
         '<div class="pcard__media">'
         f'<button class="pcard__wish" aria-label="위시리스트 추가" data-wish-id="{p["id"]}" '
-        f'data-wish-name="{p["name"]}" data-wish-image="{img}" data-wish-link="{link}">'
+        f'data-wish-name="{name}" data-wish-image="{img}" data-wish-link="{link}">'
         '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">'
         '<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>'
         "</button>"
-        f'<a href="{link}"><img loading="lazy" src="{img}" alt="{p["name"]}" /></a>'
+        f'<a href="{link}"><img loading="lazy" src="{img}" alt="{name}" /></a>'
         '<span class="pcard__badge">정품 · 프리러브드</span>'
         "</div>"
         '<div class="pcard__info">'
-        f'<p class="pcard__name">{p["name"]}</p>'
+        f'<p class="pcard__name">{name}</p>'
         f'<p class="pcard__price">{money(p["price"])}</p>'
         f'<a href="{link}" class="pcard__cta">장바구니 담기</a>'
         "</div>"
@@ -106,7 +107,9 @@ def pcard_html(p: dict) -> str:
 
 
 def build_seo_block(product: dict, collection: dict, canonical_url: str, plain_desc: str, images: list[str]) -> str:
-    title = f'{product["name"]} — {SITE_NAME}'
+    name = esc(product["name"])
+    desc = esc(plain_desc)
+    title = f'{name} — {SITE_NAME}'
     og_image = images[0] if images else abs_url("/images/seo/default-og.jpg")
 
     graph = [
@@ -139,20 +142,20 @@ def build_seo_block(product: dict, collection: dict, canonical_url: str, plain_d
 
     return f"""  <!-- SEO:AUTO:START -->
   <link rel="canonical" href="{canonical_url}" />
-  <meta name="description" content="{plain_desc}" />
+  <meta name="description" content="{desc}" />
   <meta name="robots" content="index, follow" />
   <meta name="theme-color" content="#0d0d0d" />
   <meta property="og:type" content="product" />
   <meta property="og:site_name" content="{SITE_NAME}" />
   <meta property="og:locale" content="ko_KR" />
   <meta property="og:title" content="{title}" />
-  <meta property="og:description" content="{plain_desc}" />
+  <meta property="og:description" content="{desc}" />
   <meta property="og:url" content="{canonical_url}" />
   <meta property="og:image" content="{og_image}" />
-  <meta property="og:image:alt" content="{product["name"]}" />
+  <meta property="og:image:alt" content="{name}" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="{title}" />
-  <meta name="twitter:description" content="{plain_desc}" />
+  <meta name="twitter:description" content="{desc}" />
   <meta name="twitter:image" content="{og_image}" />
   <script type="application/ld+json" id="seo-jsonld">{ld_json}</script>
   <!-- SEO:AUTO:END -->"""
@@ -354,11 +357,11 @@ def build_page(product: dict, products: list[dict]) -> str:
     seo_block = build_seo_block(product, collection, canonical_url, plain_desc, images)
 
     return PAGE_TEMPLATE.format(
-        title=f'{product["name"]} — {SITE_NAME}',
+        title=f'{esc(product["name"])} — {SITE_NAME}',
         seo_block=seo_block,
         collection_link=collection["link"],
         collection_label=collection["label"],
-        name=product["name"],
+        name=esc(product["name"]),
         thumbs=thumbs,
         main_image=product["images"][0] if product["images"] else "",
         price=money(product["price"]),

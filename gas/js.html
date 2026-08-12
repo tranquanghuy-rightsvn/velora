@@ -1,0 +1,736 @@
+<script>
+  // ================= Config =================
+  // Product image paths are stored site-relative ("/images/products/x.jpg"),
+  // matching the convention already used by every existing product. This
+  // constant is ONLY used to build a previewable <img> src inside the admin
+  // iframe (which runs on a googleusercontent.com origin, so a relative path
+  // can't resolve there) — it is never written into saved data.
+  var SITE_BASE_URL = 'https://velorakr.com';
+
+  // ================= State =================
+  var TOKEN_KEY = 'velora_cms_token';
+  var TOKEN = null;
+  try { TOKEN = localStorage.getItem(TOKEN_KEY); } catch (e) {}
+
+  var ME = null; // {email, role: 'root' | 'editor' | 'viewer'}
+  var SECTIONS = ['products', 'orders', 'posts', 'users'];
+  var currentSection = 'products';
+  var products = [], orders = [], posts = [], users = [];
+  var currentProduct = null; // {id, images: [path...]}
+  var currentOrder = null;
+  var currentPost = null;    // {id, coverImage}
+  var appLoaded = false;
+
+  // ================= Helpers =================
+  function $(id) { return document.getElementById(id); }
+  function hideEl(id) { var el = $(id); if (el) el.classList.add('hidden'); }
+  function showEl(id) { var el = $(id); if (el) el.classList.remove('hidden'); }
+
+  function showOverlay(text) { $('overlay-text').textContent = text || '처리 중...'; $('overlay').classList.remove('hidden'); }
+  function hideOverlay() { $('overlay').classList.add('hidden'); }
+
+  var toastTimer = null;
+  function toast(msg, isError) {
+    var el = $('toast');
+    el.textContent = msg;
+    el.classList.toggle('error', !!isError);
+    el.classList.remove('hidden');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.add('hidden'); }, 3500);
+  }
+
+  function run(fnName) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return new Promise(function (resolve, reject) {
+      var runner = google.script.run
+        .withSuccessHandler(resolve)
+        .withFailureHandler(function (err) { reject(new Error(err && err.message ? err.message : String(err))); });
+      runner[fnName].apply(runner, args);
+    });
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function fmtDate(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    return isNaN(d) ? String(iso) : d.toLocaleString('ko-KR');
+  }
+
+  function fmtMoney(n) { return '₩' + (Number(n) || 0).toLocaleString('ko-KR'); }
+
+  function badge(value) {
+    var cls = 'badge-status--' + String(value || '').replace(/\s+/g, '');
+    return '<span class="badge-status ' + cls + '">' + escapeHtml(value) + '</span>';
+  }
+
+  function reportGithub(res, verb) {
+    if (res && res.github && res.github.ok === false) {
+      toast(verb + '되었지만 GitHub 배포에 실패했습니다: ' + res.github.error, true);
+    } else {
+      toast(verb + '되었습니다.');
+    }
+  }
+
+  function isEditor() { return !!(ME && (ME.role === 'editor' || ME.role === 'root')); }
+  function isRoot() { return !!(ME && ME.role === 'root'); }
+
+  // ---- Client-side image compression (canvas resize) before every upload ----
+  var COMPRESS_MAX_DIM = 1600;
+  var COMPRESS_SKIP_BYTES = 400 * 1024;
+
+  function compressImage(blob) {
+    return new Promise(function (resolve) {
+      var type = blob.type;
+      if (type === 'image/gif' || type === 'image/svg+xml') { resolve(blob); return; }
+      var url = URL.createObjectURL(blob);
+      var img = new Image();
+      img.onload = function () {
+        URL.revokeObjectURL(url);
+        var scale = Math.min(1, COMPRESS_MAX_DIM / Math.max(img.width, img.height));
+        if (scale === 1 && blob.size <= COMPRESS_SKIP_BYTES) { resolve(blob); return; }
+        var canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        var outType = type === 'image/png' ? 'image/png' : 'image/jpeg';
+        canvas.toBlob(function (out) { resolve(out && out.size < blob.size ? out : blob); }, outType, 0.85);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); resolve(blob); };
+      img.src = url;
+    });
+  }
+
+  function blobToBase64(blob) {
+    return new Promise(function (resolve) {
+      var r = new FileReader();
+      r.onload = function () { resolve(String(r.result).split(',')[1]); };
+      r.readAsDataURL(blob);
+    });
+  }
+
+  // ================= Views =================
+  function hideAllViews() {
+    ['view-login', 'view-products', 'view-product-editor', 'view-orders', 'view-order-editor',
+      'view-posts', 'view-post-editor', 'view-users'].forEach(hideEl);
+  }
+
+  function showLogin() {
+    document.body.classList.add('login-mode');
+    hideAllViews();
+    showEl('view-login');
+    SECTIONS.forEach(function (s) { hideEl('nav-' + s); });
+    hideEl('btn-new'); hideEl('btn-back'); hideEl('btn-logout');
+    $('user-badge').textContent = '';
+  }
+
+  function setNav(active) {
+    SECTIONS.forEach(function (s) { $('nav-' + s).classList.toggle('active', s === active); });
+  }
+
+  var SECTION_TITLES = { products: '상품 관리', orders: '주문 관리', posts: '게시글 관리', users: '계정 관리' };
+
+  function showSection(name) {
+    currentSection = name;
+    hideAllViews();
+    setNav(name);
+    $('page-title').textContent = SECTION_TITLES[name];
+    hideEl('btn-back');
+    if (name === 'users') {
+      hideEl('btn-new');
+      showEl('view-users');
+      refreshUsers();
+    } else {
+      if (isEditor()) showEl('btn-new'); else hideEl('btn-new');
+      showEl('view-' + name);
+      if (name === 'products') refreshProducts();
+      if (name === 'orders') refreshOrders();
+      if (name === 'posts') refreshPosts();
+    }
+  }
+
+  function openNewForCurrentSection() {
+    if (currentSection === 'products') openNewProduct();
+    else if (currentSection === 'orders') openNewOrder();
+    else if (currentSection === 'posts') openNewPost();
+  }
+
+  function backToList() {
+    destroyPostEditor();
+    currentProduct = null;
+    currentOrder = null;
+    currentPost = null;
+    hideEl('btn-back');
+    showSection(currentSection);
+  }
+
+  function enterEditorView(viewId) {
+    hideAllViews();
+    showEl(viewId);
+    showEl('btn-back');
+    hideEl('btn-new');
+  }
+
+  // ================= Auth =================
+  function sendCode() {
+    var email = $('login-email').value.trim();
+    hideEl('login-error');
+    if (!email) { toast('이메일을 입력하세요.', true); return; }
+    showOverlay('코드를 이메일로 전송 중...');
+    run('requestOtp', email)
+      .then(function () {
+        showEl('login-code-field');
+        showEl('btn-verify');
+        $('btn-send-code').textContent = '코드 재전송';
+        $('login-code').focus();
+        toast('코드를 전송했습니다. 메일함(스팸함 포함)을 확인하세요.');
+      })
+      .catch(function (e) { $('login-error').textContent = e.message; showEl('login-error'); })
+      .finally(hideOverlay);
+  }
+
+  function verifyCode() {
+    var email = $('login-email').value.trim();
+    var code = $('login-code').value.trim();
+    if (!code) { toast('로그인 코드를 입력하세요.', true); return; }
+    showOverlay('확인 중...');
+    run('verifyOtp', email, code)
+      .then(function (res) {
+        if (!res || !res.me || !res.me.role) { toast('이 이메일은 접근 권한이 없습니다.', true); return; }
+        TOKEN = res.token;
+        try { localStorage.setItem(TOKEN_KEY, TOKEN); } catch (e) {}
+        enterApp(res.me);
+      })
+      .catch(function (e) { $('login-error').textContent = e.message; showEl('login-error'); })
+      .finally(hideOverlay);
+  }
+
+  function doLogout() {
+    if (TOKEN) run('logout', TOKEN).catch(function () {});
+    TOKEN = null;
+    try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+    ME = null;
+    $('app-root').innerHTML = '';
+    appLoaded = false;
+    showLogin();
+  }
+
+  function ensureAppShell() {
+    if (appLoaded) return Promise.resolve();
+    return run('getAppHtml', TOKEN).then(function (htmlStr) {
+      $('app-root').innerHTML = htmlStr;
+      wireAppEvents();
+      appLoaded = true;
+    });
+  }
+
+  function enterApp(me) {
+    ME = me;
+    document.body.classList.remove('login-mode');
+    $('user-badge').innerHTML = escapeHtml(me.email) + ' &middot; <b>' + escapeHtml(me.role) + '</b>';
+    showEl('btn-logout');
+    showOverlay('화면을 불러오는 중...');
+    ensureAppShell()
+      .then(function () {
+        SECTIONS.forEach(function (s) { showEl('nav-' + s); });
+        $('nav-users').classList.toggle('hidden', !isRoot());
+        showSection('products');
+      })
+      .catch(function (e) { toast('화면 로딩 오류: ' + e.message, true); showLogin(); })
+      .finally(hideOverlay);
+  }
+
+  // Runs once on page load: reuse a saved token so a refresh doesn't force re-login.
+  (function boot() {
+    if (!TOKEN) { showLogin(); return; }
+    showOverlay('세션 확인 중...');
+    run('boot', TOKEN)
+      .then(function (res) {
+        if (!res.me || !res.me.role) { doLogout(); return; }
+        if (res.appHtml) { $('app-root').innerHTML = res.appHtml; wireAppEvents(); appLoaded = true; }
+        enterApp(res.me);
+      })
+      .catch(function () { doLogout(); })
+      .finally(hideOverlay);
+  })();
+
+  function loadingRow(cols, label) {
+    return '<tr><td colspan="' + cols + '" class="text-center py-5">' +
+      '<div class="spinner-border text-secondary"></div><div class="muted mt-2">' + label + '</div></td></tr>';
+  }
+
+  // ================= Products =================
+  function refreshProducts() {
+    $('product-rows').innerHTML = loadingRow(7, '상품 목록을 불러오는 중...');
+    run('listProducts', TOKEN)
+      .then(function (data) { products = data || []; renderProductRows(); })
+      .catch(function (e) { $('product-rows').innerHTML = '<tr><td colspan="7" class="text-danger text-center py-4">' + escapeHtml(e.message) + '</td></tr>'; });
+  }
+
+  function renderProductRows() {
+    if (!products.length) { $('product-rows').innerHTML = '<tr><td colspan="7" class="text-center py-5 muted">등록된 상품이 없습니다.</td></tr>'; return; }
+    $('product-rows').innerHTML = products.map(function (p) {
+      var thumb = p.images && p.images[0] ? '<img src="' + SITE_BASE_URL + p.images[0] + '" style="width:44px;height:44px;object-fit:cover;border-radius:4px;">' : '<div class="muted">-</div>';
+      var actions = isEditor()
+        ? '<button class="btn btn-sm btn-outline-primary me-1" onclick="openEditProduct(\'' + p.id + '\')"><i class="fa-solid fa-pen"></i></button>' +
+          '<button class="btn btn-sm btn-outline-danger" onclick="removeProduct(\'' + p.id + '\')"><i class="fa-solid fa-trash"></i></button>'
+        : '<button class="btn btn-sm btn-outline-secondary" onclick="openEditProduct(\'' + p.id + '\')"><i class="fa-solid fa-eye"></i></button>';
+      return '<tr><td>' + thumb + '</td><td>' + escapeHtml(p.name) + '<div class="muted">' + escapeHtml(p.id) + '</div></td>' +
+        '<td>' + escapeHtml(p.category) + '</td><td>' + fmtMoney(p.price) + '</td><td>' + badge(p.status) + '</td>' +
+        '<td class="muted">' + fmtDate(p.updatedAt) + '</td><td>' + actions + '</td></tr>';
+    }).join('');
+  }
+
+  function removeProduct(id) {
+    if (!confirm('이 상품을 삭제하시겠습니까? 사이트에서도 제거됩니다.')) return;
+    showOverlay('삭제 중...');
+    run('deleteProduct', TOKEN, id).then(function (res) { reportGithub(res, '삭제'); refreshProducts(); })
+      .catch(function (e) { toast(e.message, true); }).finally(hideOverlay);
+  }
+
+  function openNewProduct() {
+    currentProduct = { id: '', images: [] };
+    fillProductForm(currentProduct, true);
+    enterEditorView('view-product-editor');
+  }
+
+  function openEditProduct(id) {
+    showOverlay('불러오는 중...');
+    run('getProduct', TOKEN, id)
+      .then(function (p) { currentProduct = p; fillProductForm(p, false); enterEditorView('view-product-editor'); })
+      .catch(function (e) { toast(e.message, true); })
+      .finally(hideOverlay);
+  }
+
+  function fillProductForm(p, isNew) {
+    $('pr-name').value = p.name || '';
+    $('pr-id').value = p.id || '(저장 시 자동 생성)';
+    $('pr-category').value = p.category || 'jewelry';
+    $('pr-price').value = p.price || '';
+    $('pr-status').value = p.status || 'draft';
+    tinymce.remove('#product-content-editor');
+    $('product-content-editor').value = p.description || '';
+    tinymce.init(tinyBasicConfig('#product-content-editor', !isEditor()));
+    renderProductImageGrid();
+    applyFormAccess(['pr-name', 'pr-category', 'pr-price', 'pr-status', 'pr-images'], !isEditor());
+    $('product-readonly-note').classList.toggle('hidden', isEditor());
+  }
+
+  function renderProductImageGrid() {
+    var grid = $('product-image-grid');
+    grid.innerHTML = (currentProduct.images || []).map(function (path, i) {
+      var remove = isEditor() ? '<button class="gallery-remove" onclick="removeProductImage(' + i + ')">&times;</button>' : '';
+      var coverBadge = i === 0 ? '<span class="gallery-badge">대표</span>' : '';
+      return '<div class="gallery-item' + (i === 0 ? ' gallery-item--cover' : '') + '">' +
+        '<img src="' + SITE_BASE_URL + path + '">' + coverBadge + remove + '</div>';
+    }).join('');
+  }
+
+  function removeProductImage(i) {
+    currentProduct.images.splice(i, 1);
+    renderProductImageGrid();
+  }
+
+  /** Resolves the product id to use for image uploads, reserving one from the name if needed. */
+  function ensureProductId() {
+    if (currentProduct.id) return Promise.resolve(currentProduct.id);
+    var name = $('pr-name').value.trim();
+    if (!name) { toast('상품명을 먼저 입력하세요.', true); return Promise.reject(new Error('no name')); }
+    return run('reserveProductId', TOKEN, name).then(function (res) {
+      currentProduct.id = res.id;
+      $('pr-id').value = res.id;
+      return res.id;
+    });
+  }
+
+  function uploadProductImages(fileList) {
+    var files = Array.prototype.slice.call(fileList);
+    if (!files.length) return;
+    ensureProductId().then(function (id) {
+      $('product-image-status').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>업로드 중...';
+      var startIndex = currentProduct.images.length;
+      var uploads = files.map(function (file, i) {
+        return compressImage(file).then(function (small) {
+          return blobToBase64(small).then(function (base64) {
+            return run('uploadProductImage', TOKEN, id, startIndex + i + 1, base64, small.type);
+          });
+        });
+      });
+      return Promise.all(uploads).then(function (results) {
+        results.forEach(function (r) { currentProduct.images.push(r.path); });
+        renderProductImageGrid();
+        $('product-image-status').textContent = '';
+      });
+    }).catch(function (e) {
+      if (e.message !== 'no name') toast('이미지 업로드 실패: ' + e.message, true);
+      $('product-image-status').textContent = '';
+    });
+  }
+
+  function saveProductAction() {
+    var name = $('pr-name').value.trim();
+    if (!name) { toast('상품명을 입력하세요.', true); return; }
+    ensureProductId().then(function (id) {
+      var payload = {
+        id: id,
+        name: name,
+        category: $('pr-category').value,
+        price: Number($('pr-price').value),
+        status: $('pr-status').value,
+        images: currentProduct.images,
+        description: tinymce.get('product-content-editor').getContent(),
+      };
+      showOverlay('저장 중...');
+      return run('saveProduct', TOKEN, payload).then(function (res) {
+        reportGithub(res, '저장');
+        backToList();
+      });
+    }).catch(function (e) {
+      if (e.message !== 'no name') toast(e.message, true);
+    }).finally(hideOverlay);
+  }
+
+  // ================= Orders =================
+  function refreshOrders() {
+    $('order-rows').innerHTML = loadingRow(8, '주문 목록을 불러오는 중...');
+    run('listOrders', TOKEN)
+      .then(function (data) { orders = data || []; renderOrderRows(); })
+      .catch(function (e) { $('order-rows').innerHTML = '<tr><td colspan="8" class="text-danger text-center py-4">' + escapeHtml(e.message) + '</td></tr>'; });
+  }
+
+  function renderOrderRows() {
+    if (!orders.length) { $('order-rows').innerHTML = '<tr><td colspan="8" class="text-center py-5 muted">등록된 주문이 없습니다.</td></tr>'; return; }
+    $('order-rows').innerHTML = orders.map(function (o) {
+      var actions = isEditor()
+        ? '<button class="btn btn-sm btn-outline-primary me-1" onclick="openEditOrder(\'' + o.id + '\')"><i class="fa-solid fa-pen"></i></button>' +
+          '<button class="btn btn-sm btn-outline-danger" onclick="removeOrder(\'' + o.id + '\')"><i class="fa-solid fa-trash"></i></button>'
+        : '<button class="btn btn-sm btn-outline-secondary" onclick="openEditOrder(\'' + o.id + '\')"><i class="fa-solid fa-eye"></i></button>';
+      return '<tr><td class="muted">' + escapeHtml(o.id) + '</td><td>' + escapeHtml(o.customerName) + '</td>' +
+        '<td>' + escapeHtml(o.customerPhone || o.customerInstagram || '-') + '</td><td>' + fmtMoney(o.totalAmount) + '</td>' +
+        '<td>' + badge(o.paymentStatus) + '</td><td>' + badge(o.orderStatus) + '</td>' +
+        '<td class="muted">' + fmtDate(o.createdAt) + '</td><td>' + actions + '</td></tr>';
+    }).join('');
+  }
+
+  function removeOrder(id) {
+    if (!confirm('이 주문을 삭제하시겠습니까?')) return;
+    showOverlay('삭제 중...');
+    run('deleteOrder', TOKEN, id).then(function () { toast('삭제되었습니다.'); refreshOrders(); })
+      .catch(function (e) { toast(e.message, true); }).finally(hideOverlay);
+  }
+
+  function openNewOrder() {
+    currentOrder = { id: '', items: [] };
+    fillOrderForm(currentOrder, true);
+    enterEditorView('view-order-editor');
+  }
+
+  function openEditOrder(id) {
+    showOverlay('불러오는 중...');
+    run('getOrder', TOKEN, id)
+      .then(function (o) { currentOrder = o; fillOrderForm(o, false); enterEditorView('view-order-editor'); })
+      .catch(function (e) { toast(e.message, true); })
+      .finally(hideOverlay);
+  }
+
+  function fillOrderForm(o, isNew) {
+    $('or-customer-name').value = o.customerName || '';
+    $('or-customer-phone').value = o.customerPhone || '';
+    $('or-customer-email').value = o.customerEmail || '';
+    $('or-customer-instagram').value = o.customerInstagram || '';
+    $('or-address').value = o.shippingAddress || '';
+    $('or-discount').value = o.discount || 0;
+    $('or-payment-method').value = o.paymentMethod || '카카오페이';
+    $('or-payment-status').value = o.paymentStatus || '미결제';
+    $('or-status').value = o.orderStatus || '신규';
+    $('or-tracking').value = o.trackingNumber || '';
+    $('or-note').value = o.note || '';
+    $('order-items').innerHTML = '';
+    (o.items && o.items.length ? o.items : [{ name: '', price: '', qty: 1 }]).forEach(function (it) {
+      addOrderItemRow(it.name, it.price, it.qty);
+    });
+    recalcOrderTotal();
+    var fields = ['or-customer-name', 'or-customer-phone', 'or-customer-email', 'or-customer-instagram', 'or-address', 'or-discount',
+      'or-payment-method', 'or-payment-status', 'or-status', 'or-tracking', 'or-note'];
+    applyFormAccess(fields, !isEditor());
+    $('order-readonly-note').classList.toggle('hidden', isEditor());
+  }
+
+  function addOrderItemRow(name, price, qty) {
+    var row = document.createElement('div');
+    row.className = 'order-item-row';
+    row.innerHTML =
+      '<input type="text" class="form-control" placeholder="상품명" value="' + escapeHtml(name || '') + '" data-role="name">' +
+      '<input type="number" class="form-control" placeholder="가격" min="0" step="1000" value="' + (price || '') + '" data-role="price" oninput="recalcOrderTotal()">' +
+      '<input type="number" class="form-control" placeholder="수량" min="1" step="1" value="' + (qty || 1) + '" data-role="qty" oninput="recalcOrderTotal()">' +
+      '<button type="button" class="btn btn-sm btn-outline-danger" onclick="this.parentElement.remove(); recalcOrderTotal();">&times;</button>';
+    $('order-items').appendChild(row);
+  }
+
+  function collectOrderItems() {
+    return Array.prototype.map.call($('order-items').children, function (row) {
+      return {
+        name: row.querySelector('[data-role=name]').value.trim(),
+        price: Number(row.querySelector('[data-role=price]').value) || 0,
+        qty: Number(row.querySelector('[data-role=qty]').value) || 0,
+      };
+    }).filter(function (it) { return it.name; });
+  }
+
+  function recalcOrderTotal() {
+    var subtotal = collectOrderItems().reduce(function (sum, it) { return sum + it.price * it.qty; }, 0);
+    var discount = Number($('or-discount').value) || 0;
+    $('or-total').value = fmtMoney(Math.max(0, subtotal - discount));
+  }
+
+  function saveOrderAction() {
+    var items = collectOrderItems();
+    if (!$('or-customer-name').value.trim()) { toast('고객명을 입력하세요.', true); return; }
+    if (!items.length) { toast('최소 1개 이상의 상품을 추가하세요.', true); return; }
+    var payload = {
+      id: currentOrder.id || '',
+      customerName: $('or-customer-name').value.trim(),
+      customerPhone: $('or-customer-phone').value.trim(),
+      customerEmail: $('or-customer-email').value.trim(),
+      customerInstagram: $('or-customer-instagram').value.trim(),
+      shippingAddress: $('or-address').value.trim(),
+      items: items,
+      discount: Number($('or-discount').value) || 0,
+      paymentMethod: $('or-payment-method').value,
+      paymentStatus: $('or-payment-status').value,
+      orderStatus: $('or-status').value,
+      trackingNumber: $('or-tracking').value.trim(),
+      note: $('or-note').value.trim(),
+    };
+    showOverlay('저장 중...');
+    run('saveOrder', TOKEN, payload)
+      .then(function () { toast('저장되었습니다.'); backToList(); })
+      .catch(function (e) { toast(e.message, true); })
+      .finally(hideOverlay);
+  }
+
+  // ================= Posts =================
+  function refreshPosts() {
+    $('post-rows').innerHTML = loadingRow(6, '게시글 목록을 불러오는 중...');
+    run('listPosts', TOKEN)
+      .then(function (data) { posts = data || []; renderPostRows(); })
+      .catch(function (e) { $('post-rows').innerHTML = '<tr><td colspan="6" class="text-danger text-center py-4">' + escapeHtml(e.message) + '</td></tr>'; });
+  }
+
+  function renderPostRows() {
+    if (!posts.length) { $('post-rows').innerHTML = '<tr><td colspan="6" class="text-center py-5 muted">등록된 게시글이 없습니다.</td></tr>'; return; }
+    $('post-rows').innerHTML = posts.map(function (p) {
+      var thumb = p.coverImage ? '<img src="' + SITE_BASE_URL + p.coverImage + '" style="width:44px;height:44px;object-fit:cover;border-radius:4px;">' : '<div class="muted">-</div>';
+      var actions = isEditor()
+        ? '<button class="btn btn-sm btn-outline-primary me-1" onclick="openEditPost(\'' + p.id + '\')"><i class="fa-solid fa-pen"></i></button>' +
+          '<button class="btn btn-sm btn-outline-danger" onclick="removePost(\'' + p.id + '\')"><i class="fa-solid fa-trash"></i></button>'
+        : '<button class="btn btn-sm btn-outline-secondary" onclick="openEditPost(\'' + p.id + '\')"><i class="fa-solid fa-eye"></i></button>';
+      return '<tr><td>' + thumb + '</td><td>' + escapeHtml(p.title) + '<div class="muted">' + escapeHtml(p.id) + '</div></td>' +
+        '<td>' + badge(p.status) + '</td><td class="muted">' + escapeHtml(p.publishedAt) + '</td>' +
+        '<td class="muted">' + fmtDate(p.updatedAt) + '</td><td>' + actions + '</td></tr>';
+    }).join('');
+  }
+
+  function removePost(id) {
+    if (!confirm('이 게시글을 삭제하시겠습니까? 사이트에서도 제거됩니다.')) return;
+    showOverlay('삭제 중...');
+    run('deletePost', TOKEN, id).then(function (res) { reportGithub(res, '삭제'); refreshPosts(); })
+      .catch(function (e) { toast(e.message, true); }).finally(hideOverlay);
+  }
+
+  function openNewPost() {
+    currentPost = { id: '', coverImage: '' };
+    fillPostForm(currentPost, true);
+    enterEditorView('view-post-editor');
+  }
+
+  function openEditPost(id) {
+    showOverlay('불러오는 중...');
+    run('getPost', TOKEN, id)
+      .then(function (p) { currentPost = p; fillPostForm(p, false); enterEditorView('view-post-editor'); })
+      .catch(function (e) { toast(e.message, true); })
+      .finally(hideOverlay);
+  }
+
+  function destroyPostEditor() {
+    if (tinymce.get('product-content-editor')) tinymce.remove('#product-content-editor');
+    if (tinymce.get('post-content-editor')) tinymce.remove('#post-content-editor');
+  }
+
+  function tinyBasicConfig(selector, readOnly) {
+    return {
+      selector: selector,
+      height: 420,
+      menubar: false,
+      readonly: !!readOnly,
+      plugins: 'image link lists code',
+      toolbar: readOnly ? false : 'undo redo | blocks | bold italic underline | bullist numlist | link image | code',
+      automatic_uploads: true,
+      images_upload_handler: currentPostImageUploadHandler,
+      paste_data_images: false,
+    };
+  }
+
+  function currentPostImageUploadHandler(blobInfo) {
+    return ensurePostId().then(function (id) {
+      return compressImage(blobInfo.blob()).then(function (small) {
+        return blobToBase64(small).then(function (base64) {
+          return run('uploadPostImage', TOKEN, id, base64, small.type, blobInfo.filename())
+            .then(function (res) { return SITE_BASE_URL + res.path; });
+        });
+      });
+    });
+  }
+
+  /** Strips the admin-preview absolute prefix back to a site-relative path before saving. */
+  function toRelativeContentUrls(html) {
+    return (html || '').split(SITE_BASE_URL).join('');
+  }
+
+  function fillPostForm(p, isNew) {
+    $('ps-title').value = p.title || '';
+    $('ps-id').value = p.id || '(저장 시 자동 생성)';
+    $('ps-excerpt').value = p.excerpt || '';
+    $('ps-status').value = p.status || 'draft';
+    $('ps-published-at').value = p.publishedAt || new Date().toISOString().slice(0, 10);
+    if (p.coverImage) {
+      $('post-cover-preview').src = SITE_BASE_URL + p.coverImage;
+      $('post-cover-preview').classList.remove('hidden');
+    } else {
+      $('post-cover-preview').classList.add('hidden');
+    }
+    $('post-cover-status').textContent = '';
+    destroyPostEditor();
+    $('post-content-editor').value = p.content || '';
+    tinymce.init(tinyBasicConfig('#post-content-editor', !isEditor()));
+    var fields = ['ps-title', 'ps-excerpt', 'ps-status', 'ps-published-at', 'ps-cover'];
+    applyFormAccess(fields, !isEditor());
+    $('post-readonly-note').classList.toggle('hidden', isEditor());
+  }
+
+  function ensurePostId() {
+    if (currentPost.id) return Promise.resolve(currentPost.id);
+    var title = $('ps-title').value.trim();
+    if (!title) { toast('제목을 먼저 입력하세요.', true); return Promise.reject(new Error('no title')); }
+    return run('reservePostId', TOKEN, title).then(function (res) {
+      currentPost.id = res.id;
+      $('ps-id').value = res.id;
+      return res.id;
+    });
+  }
+
+  function uploadPostCover(file) {
+    ensurePostId().then(function (id) {
+      $('post-cover-preview').src = URL.createObjectURL(file);
+      $('post-cover-preview').classList.remove('hidden');
+      $('post-cover-status').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>업로드 중...';
+      return compressImage(file).then(function (small) {
+        return blobToBase64(small).then(function (base64) {
+          return run('uploadPostImage', TOKEN, id, base64, small.type, file.name);
+        });
+      });
+    }).then(function (res) {
+      if (!res) return;
+      currentPost.coverImage = res.path;
+      $('post-cover-status').textContent = '업로드 완료';
+    }).catch(function (e) {
+      if (e.message !== 'no title') toast('커버 업로드 실패: ' + e.message, true);
+      $('post-cover-status').textContent = '';
+    });
+  }
+
+  function savePostAction() {
+    var title = $('ps-title').value.trim();
+    if (!title) { toast('제목을 입력하세요.', true); return; }
+    ensurePostId().then(function (id) {
+      var payload = {
+        id: id,
+        title: title,
+        excerpt: $('ps-excerpt').value.trim(),
+        coverImage: currentPost.coverImage || '',
+        content: toRelativeContentUrls(tinymce.get('post-content-editor').getContent()),
+        status: $('ps-status').value,
+        publishedAt: $('ps-published-at').value,
+      };
+      showOverlay('저장 중...');
+      return run('savePost', TOKEN, payload).then(function (res) {
+        reportGithub(res, '저장');
+        backToList();
+      });
+    }).catch(function (e) {
+      if (e.message !== 'no title') toast(e.message, true);
+    }).finally(hideOverlay);
+  }
+
+  // ================= Users (root only) =================
+  function refreshUsers() {
+    if (!isRoot()) return;
+    $('user-rows').innerHTML = loadingRow(4, '계정 목록을 불러오는 중...');
+    run('listUsers', TOKEN)
+      .then(function (data) { users = data || []; renderUserRows(); })
+      .catch(function (e) { $('user-rows').innerHTML = '<tr><td colspan="4" class="text-danger text-center py-4">' + escapeHtml(e.message) + '</td></tr>'; });
+  }
+
+  function renderUserRows() {
+    if (!users.length) { $('user-rows').innerHTML = '<tr><td colspan="4" class="text-center py-5 muted">등록된 계정이 없습니다.</td></tr>'; return; }
+    $('user-rows').innerHTML = users.map(function (u) {
+      var roleCell = u.editable
+        ? '<select class="form-select form-select-sm" onchange="changeUserRole(\'' + u.email + '\', this.value)">' +
+          '<option value="editor"' + (u.role === 'editor' ? ' selected' : '') + '>editor</option>' +
+          '<option value="viewer"' + (u.role === 'viewer' ? ' selected' : '') + '>viewer</option></select>'
+        : badge(u.role);
+      var actions = u.editable ? '<button class="btn btn-sm btn-outline-danger" onclick="removeUser(\'' + u.email + '\')"><i class="fa-solid fa-trash"></i></button>' : '';
+      return '<tr><td>' + escapeHtml(u.email) + '</td><td>' + roleCell + '</td><td class="muted">' + fmtDate(u.createdAt) + '</td><td>' + actions + '</td></tr>';
+    }).join('');
+  }
+
+  function addUserAction() {
+    var email = $('us-email').value.trim();
+    var role = $('us-role').value;
+    if (!email) { toast('이메일을 입력하세요.', true); return; }
+    showOverlay('추가 중...');
+    run('addUser', TOKEN, email, role)
+      .then(function () { $('us-email').value = ''; toast('추가되었습니다.'); refreshUsers(); })
+      .catch(function (e) { toast(e.message, true); })
+      .finally(hideOverlay);
+  }
+
+  function changeUserRole(email, role) {
+    showOverlay('변경 중...');
+    run('updateUserRole', TOKEN, email, role)
+      .then(function () { toast('변경되었습니다.'); })
+      .catch(function (e) { toast(e.message, true); refreshUsers(); })
+      .finally(hideOverlay);
+  }
+
+  function removeUser(email) {
+    if (!confirm(email + ' 계정을 삭제하시겠습니까?')) return;
+    showOverlay('삭제 중...');
+    run('deleteUser', TOKEN, email)
+      .then(function () { toast('삭제되었습니다.'); refreshUsers(); })
+      .catch(function (e) { toast(e.message, true); })
+      .finally(hideOverlay);
+  }
+
+  // ================= Form access (viewer = read-only) =================
+  function applyFormAccess(fieldIds, readOnly) {
+    fieldIds.forEach(function (id) { var el = $(id); if (el) el.disabled = readOnly; });
+  }
+
+  // ================= Wire events (called once, after app shell HTML loads) =================
+  function wireAppEvents() {
+    $('pr-images').addEventListener('change', function () {
+      if (this.files.length) uploadProductImages(this.files);
+      this.value = '';
+    });
+    $('ps-cover').addEventListener('change', function () {
+      var file = this.files[0];
+      if (file) uploadPostCover(file);
+      this.value = '';
+    });
+  }
+</script>

@@ -2,6 +2,7 @@
 generate_collections.py."""
 from __future__ import annotations
 
+import html
 import re
 
 BASE_URL = "https://velorakr.com"
@@ -144,3 +145,11 @@ def breadcrumb_jsonld(crumbs: list[tuple[str, str]]) -> dict:
 
 def money(n) -> str:
     return "₩" + f"{int(n):,}"
+
+
+def esc(s: str) -> str:
+    """Escapes text for use as HTML content or an attribute value. Data now
+    comes from free-text CMS input (product names, post titles/excerpts),
+    not just hand-picked strings, so a literal `"` or `&` must not be able
+    to break out of a `content="..."` / `alt="..."` attribute."""
+    return html.escape(str(s or ""), quote=True)
