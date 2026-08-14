@@ -729,20 +729,6 @@
     ]
   },
   {
-    "id": "custom-order",
-    "name": "맞춤 주문",
-    "category": "jewelry",
-    "price": 10000,
-    "description": "<p data-path-to-node=\"10,0\"><b data-path-to-node=\"10,0\" data-index-in-node=\"0\">맞춤 주문 &amp; 주문 제작</b></p>\n<p data-path-to-node=\"10,1\">나만의 특별한 것을 찾으시나요? 색상, 크기, 맞춤형 세부 사항에 대한 주문 제작을 받습니다.</p>\n<p data-path-to-node=\"10,2\">결제 시 \"판매자에게 남기는 메시지\"란에 구체적인 지침을 남겨주시거나, 구매 직후 저희에게 직접 메시지를 보내주세요. 궁금한 점이 있으시면 언제든지 문의해 주세요!</p>",
-    "status": "published",
-    "order": 49,
-    "createdAt": "2026-08-12",
-    "updatedAt": "2026-08-12",
-    "images": [
-      "/images/products/custom-order-01.jpg"
-    ]
-  },
-  {
     "id": "elegant-flower-motif-jewelry-collection",
     "name": "저스트 앵 끌루 브레이슬릿, 클래식 모델, 다이아몬드",
     "category": "jewelry",
