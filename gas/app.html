@@ -134,8 +134,12 @@
 
         <div class="col-12">
           <label class="form-label">Sản phẩm đặt mua *</label>
+          <select class="form-select form-select-sm mb-2" id="or-product-picker" style="max-width: 420px;">
+            <option value="">— Chọn từ danh mục sản phẩm —</option>
+          </select>
+          <small class="muted d-block mb-2">ID hiển thị trong ngoặc giúp phân biệt các sản phẩm trùng tên.</small>
           <div id="order-items"></div>
-          <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="addOrderItemRow()"><i class="fa-solid fa-plus me-1"></i>Thêm sản phẩm</button>
+          <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="addOrderItemRow()"><i class="fa-solid fa-plus me-1"></i>Thêm dòng trống (ngoài danh mục)</button>
         </div>
 
         <div class="col-md-3">

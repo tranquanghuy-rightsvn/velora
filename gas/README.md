@@ -144,6 +144,33 @@ record is written to the Sheet. Nothing in the Sheet or in `data/*.json` ever
 points at a Drive URL — only the admin UI does, and only for images added
 during the current, unsaved edit.
 
+## Order line items: linked to a catalog product, not just a name
+
+Each order item can carry `productId`/`image`/`link` alongside `name`/
+`price`/`qty` — this is what lets staff tell apart two products that happen
+to share a display name (e.g. two "LOVE 팔찌" listings at different prices,
+or genuinely identical ones). Populated two ways:
+- **Cart checkout** (`/cart/` → `doPost`): the buyer's cart already knows
+  which exact product they added (its real `id`), so `cart.js` forwards it;
+  `submitOrderPublic_` validates it strictly before storing (slug pattern for
+  `productId`, site-relative-only for `image`/`link`) since this is a public,
+  unauthenticated endpoint and those fields get rendered as an `<img src>` /
+  `<a href>` in the admin later.
+- **Manual entry** (Quản lý đơn hàng → an order): the "— Chọn từ danh mục sản
+  phẩm —" dropdown lists every product as "Tên — Giá (id)" — the `(id)` is
+  what disambiguates same-named products right in the picker. Picking one
+  fills a row with its name/price/thumbnail/link already attached. "Thêm
+  dòng trống" still exists for anything not in the catalog (a custom item, a
+  discount line, shipping, etc.) — those rows just won't have a thumbnail or
+  link, same as before this feature.
+
+**Orders placed before this shipped have none of this** — old order items
+are plain `{name, price, qty}`, with no way to recover which exact product a
+same-named entry meant. If you hit one: check whether the two products'
+prices differ (compare against the order's stored price); if they don't,
+the only real option is asking the customer to confirm via the contact info
+already on the order.
+
 ## Known trade-offs (accepted for this site's scale)
 
 - **Drive staging files are never deleted automatically.** If you upload an

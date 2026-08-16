@@ -39,8 +39,12 @@
   .gallery-item .gallery-badge--error { left: auto; right: 4px; background: #dc2626; }
   .gallery-item.gallery-item--cover { border-color: #3b82f6; }
 
-  .order-item-row { display: grid; grid-template-columns: 1fr 140px 90px 32px; gap: 8px; margin-bottom: 8px; align-items: center; }
+  .order-item-row { display: grid; grid-template-columns: 40px 1fr 140px 90px 28px 32px; gap: 8px; margin-bottom: 8px; align-items: center; }
   .order-item-row input { min-width: 0; }
+  .order-item-row__thumb { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; background: #f3f4f6; border: 1px solid #e5e7eb; }
+  .order-item-row__thumb--empty { display: block; }
+  .order-item-row__link { display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 13px; }
+  .order-item-row__link:hover { color: #2563eb; }
 
   .badge-status { padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
   .badge-status--neutral { background: #f3f4f6; color: #4b5563; }

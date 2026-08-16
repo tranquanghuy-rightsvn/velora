@@ -17,6 +17,8 @@
  *   GITHUB_BRANCH  "master" (optional, defaults to "master")
  */
 
+const SITE_BASE_URL = 'https://velorakr.com';
+
 // ---------------------------------------------------------------------------
 // Web app entry points
 // ---------------------------------------------------------------------------
@@ -936,8 +938,16 @@ function submitOrderPublic_(data) {
   if (!customerPhone && !customerEmail) throw new Error('Vui lòng nhập thông tin liên hệ (số điện thoại hoặc email).');
   if (customerEmail && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(customerEmail)) throw new Error('Email không hợp lệ.');
 
+  // productId/image/link are what let staff later tell apart two products
+  // that happen to share a name — carried through from the cart, but this is
+  // a public unauthenticated endpoint, so each is strictly validated rather
+  // than trusted as-is (the admin UI renders `link`/`image` as an <a href>/
+  // <img src>, so a bad value here would be stored XSS against the admin).
   const items = (Array.isArray(data.items) ? data.items : []).map(function (it) {
-    return { name: it.name, price: Number(it.price) || 0, qty: Number(it.qty) || 0 };
+    const productId = /^[a-z0-9]+(-[a-z0-9]+)*$/.test(it.productId) ? it.productId : '';
+    const image = /^\/[^\s"'<>]*$/.test(it.image || '') ? it.image : '';
+    const link = /^\/[^\s"'<>]*$/.test(it.link || '') ? it.link : '';
+    return { productId: productId, name: it.name, price: Number(it.price) || 0, qty: Number(it.qty) || 0, image: image, link: link };
   });
   validateOrderItems_(items);
   const totalAmount = items.reduce(function (sum, it) { return sum + it.price * it.qty; }, 0);
@@ -985,7 +995,9 @@ function notifyOwnerOfOrder_(order) {
   if (!to) return; // not configured — order is still saved, just no email sent
 
   const lines = order.items.map(function (it) {
-    return '  - ' + it.name + ' x' + it.qty + ' (' + it.price.toLocaleString() + ' KRW)';
+    var line = '  - ' + it.name + ' x' + it.qty + ' (' + it.price.toLocaleString() + ' KRW)';
+    if (it.link) line += '\n    ' + SITE_BASE_URL + it.link; // absolute URL — relative paths aren't clickable in an email client
+    return line;
   });
   const body = [
     'Đơn hàng mới đã được ghi nhận (mã đơn ' + order.id + ').',

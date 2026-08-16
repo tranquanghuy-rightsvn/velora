@@ -123,7 +123,10 @@
       customerEmail: info.email,
       shippingAddress: info.address,
       paymentMethod: paymentMethod,
-      items: items.map(function (it) { return { name: it.name, price: it.price, qty: it.qty }; }),
+      // productId/link disambiguate same-named products in the admin later —
+      // without them, staff has no way to tell which of two identically
+      // named products a given order line actually refers to.
+      items: items.map(function (it) { return { productId: it.id, name: it.name, price: it.price, qty: it.qty, image: it.image, link: it.link }; }),
       website: info.website,
     };
     return fetch(endpoint, {

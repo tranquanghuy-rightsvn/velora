@@ -470,16 +470,38 @@
       .catch(function (e) { toast(e.message, true); }).finally(hideOverlay);
   }
 
+  /** Products list, used to populate the order item picker (dropdown) — loaded on demand, not just when viewing 상품 관리. */
+  function ensureProductsLoaded() {
+    if (products.length) return Promise.resolve(products);
+    return run('listProducts', TOKEN).then(function (data) { products = data || []; return products; });
+  }
+
+  function populateProductPicker() {
+    var picker = $('or-product-picker');
+    if (!picker) return;
+    picker.innerHTML = '<option value="">— Chọn từ danh mục sản phẩm —</option>' +
+      products.map(function (p) {
+        return '<option value="' + p.id + '">' + escapeHtml(p.name) + ' — ' + fmtMoney(p.price) + ' (' + p.id + ')</option>';
+      }).join('');
+  }
+
   function openNewOrder() {
     currentOrder = { id: '', items: [] };
+    ensureProductsLoaded().then(populateProductPicker);
     fillOrderForm(currentOrder, true);
     enterEditorView('view-order-editor');
   }
 
   function openEditOrder(id) {
     showOverlay('Đang tải...');
-    run('getOrder', TOKEN, id)
-      .then(function (o) { currentOrder = o; fillOrderForm(o, false); enterEditorView('view-order-editor'); })
+    Promise.all([run('getOrder', TOKEN, id), ensureProductsLoaded()])
+      .then(function (results) {
+        var o = results[0];
+        currentOrder = o;
+        populateProductPicker();
+        fillOrderForm(o, false);
+        enterEditorView('view-order-editor');
+      })
       .catch(function (e) { toast(e.message, true); })
       .finally(hideOverlay);
   }
@@ -498,22 +520,40 @@
     $('or-note').value = o.note || '';
     $('order-items').innerHTML = '';
     (o.items && o.items.length ? o.items : [{ name: '', price: '', qty: 1 }]).forEach(function (it) {
-      addOrderItemRow(it.name, it.price, it.qty);
+      addOrderItemRow(it.name, it.price, it.qty, it.productId, it.image, it.link);
     });
     recalcOrderTotal();
     var fields = ['or-customer-name', 'or-customer-phone', 'or-customer-email', 'or-customer-instagram', 'or-address', 'or-discount',
       'or-payment-method', 'or-payment-status', 'or-status', 'or-tracking', 'or-note'];
     applyFormAccess(fields, !isEditor());
+    if ($('or-product-picker')) $('or-product-picker').disabled = !isEditor();
     $('order-readonly-note').classList.toggle('hidden', isEditor());
   }
 
-  function addOrderItemRow(name, price, qty) {
+  /**
+   * productId/image/link (from picking a catalog product) are what let staff
+   * later tell apart two products that happen to share a name — kept on the
+   * row as data attributes (not directly editable) rather than as visible
+   * fields, since they only ever come from picking a real catalog product.
+   */
+  function addOrderItemRow(name, price, qty, productId, image, link) {
     var row = document.createElement('div');
     row.className = 'order-item-row';
+    row.setAttribute('data-product-id', productId || '');
+    row.setAttribute('data-image', image || '');
+    row.setAttribute('data-link', link || '');
+    var thumb = image
+      ? '<img class="order-item-row__thumb" src="' + escapeHtml(previewImageUrl(image)) + '">'
+      : '<div class="order-item-row__thumb order-item-row__thumb--empty"></div>';
+    var linkHtml = link
+      ? '<a class="order-item-row__link" href="' + escapeHtml(SITE_BASE_URL + link) + '" target="_blank" rel="noopener" title="Xem sản phẩm trên website"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>'
+      : '<span></span>';
     row.innerHTML =
+      thumb +
       '<input type="text" class="form-control" placeholder="Tên sản phẩm" value="' + escapeHtml(name || '') + '" data-role="name">' +
       '<input type="number" class="form-control" placeholder="Giá" min="0" step="1000" value="' + (price || '') + '" data-role="price" oninput="recalcOrderTotal()">' +
       '<input type="number" class="form-control" placeholder="Số lượng" min="1" step="1" value="' + (qty || 1) + '" data-role="qty" oninput="recalcOrderTotal()">' +
+      linkHtml +
       '<button type="button" class="btn btn-sm btn-outline-danger" onclick="this.parentElement.remove(); recalcOrderTotal();">&times;</button>';
     $('order-items').appendChild(row);
   }
@@ -521,9 +561,12 @@
   function collectOrderItems() {
     return Array.prototype.map.call($('order-items').children, function (row) {
       return {
+        productId: row.getAttribute('data-product-id') || '',
         name: row.querySelector('[data-role=name]').value.trim(),
         price: Number(row.querySelector('[data-role=price]').value) || 0,
         qty: Number(row.querySelector('[data-role=qty]').value) || 0,
+        image: row.getAttribute('data-image') || '',
+        link: row.getAttribute('data-link') || '',
       };
     }).filter(function (it) { return it.name; });
   }
@@ -790,6 +833,15 @@
       var file = this.files[0];
       if (file) uploadPostCover(file);
       this.value = '';
+    });
+    $('or-product-picker').addEventListener('change', function () {
+      var id = this.value;
+      this.value = '';
+      if (!id) return;
+      var p = products.find(function (x) { return x.id === id; });
+      if (!p) return;
+      addOrderItemRow(p.name, p.price, 1, p.id, p.images && p.images[0], '/products/' + p.id + '/');
+      recalcOrderTotal();
     });
   }
 </script>
