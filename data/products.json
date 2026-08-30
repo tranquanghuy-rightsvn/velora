@@ -401,22 +401,6 @@
     ]
   },
   {
-    "id": "l-demin-jean",
-    "name": "L 데님 진",
-    "category": "jewelry",
-    "price": 95000,
-    "description": "<p data-path-to-node=\"3\">스타일을 돋보이게 하는 데일리 액세서리를 찾고 있다면 바로 이 제품입니다. 견고한 스트리트웨어 요소와 고급스러운 구조적인 마감이 결합된 이 포켓 오거나이저는 일상 소지품을 위한 최고의 포인트 아이템입니다.</p>\n<p data-path-to-node=\"4\"><b data-path-to-node=\"4\" data-index-in-node=\"0\">이 제품을 마음에 들어 할 이유:</b></p>\n<ul data-path-to-node=\"5\">\n\n<li>\n\n<p data-path-to-node=\"5,0,0\"><b data-path-to-node=\"5,0,0\" data-index-in-node=\"0\">고급 원단:</b> 손에 잡히는 느낌이 놀랍도록 질감 있고 내구성이 좋은 고품질 다크 워싱 데님으로 제작되었습니다.</p>\n\n\n</li>\n\n<li>\n\n<p data-path-to-node=\"5,1,0\"><b data-path-to-node=\"5,1,0\" data-index-in-node=\"0\">독특한 비주얼:</b> 대담하고 예술적이며 엣지 있는 룩을 선사하는 눈에 띄는 디스트레스드 플로럴 블리치드 모노그램 패턴이 특징입니다. 지루한 단색은 이제 그만!</p>\n\n\n</li>\n\n<li>\n\n<p data-path-to-node=\"5,2,0\"><b data-path-to-node=\"5,2,0\" data-index-in-node=\"0\">초슬림 &amp; 기능성:</b> 세로형 2단 지갑으로 디자인되어 앞주머니, 청바지 또는 가방에 쉽게 쏙 들어가 불필요한 부피를 더하지 않습니다.</p>\n\n\n</li>\n\n<li>\n\n<p data-path-to-node=\"5,3,0\"><b data-path-to-node=\"5,3,0\" data-index-in-node=\"0\">스마트한 수납:</b> 컴팩트한 사이즈임에도 불구하고 필수 신용카드, 신분증, 접은 지폐를 위한 전용 슬롯을 제공합니다.</p>\n\n\n</li>\n\n\n</ul>\n<p data-path-to-node=\"6\">밤 외출을 위해 차려입거나 스트리트웨어 패션으로 캐주얼하게 연출할 때에도, 이 데님 지갑은 당신의 룩에 적절한 시원한 느낌을 더해줍니다. 🖤💼</p>\n<p data-path-to-node=\"8\"><b data-path-to-node=\"8\" data-index-in-node=\"0\">제품 세부 정보:</b></p>\n<ul data-path-to-node=\"9\">\n\n<li>\n\n<p data-path-to-node=\"9,0,0\"><b data-path-to-node=\"9,0,0\" data-index-in-node=\"0\">소재:</b> 프리미엄 워시드 데님</p>\n\n\n</li>\n\n<li>\n\n<p data-path-to-node=\"9,1,0\"><b data-path-to-node=\"9,1,0\" data-index-in-node=\"0\">색상:</b> 디스트레스드 다크 그레이/블랙, 표백 화이트 포인트</p>\n\n\n</li>\n\n<li>\n\n<p data-path-to-node=\"9,2,0\"><b data-path-to-node=\"9,2,0\" data-index-in-node=\"0\">스타일:</b> 슬림 세로형 2단 포켓 오거나이저</p>\n\n\n</li>\n\n<li>\n\n<p data-path-to-node=\"9,3,0\"><b data-path-to-node=\"9,3,0\" data-index-in-node=\"0\">분위기:</b> 모던, 시크, 스트리트웨어</p>\n\n\n</li>\n\n\n</ul>",
-    "status": "published",
-    "order": 27,
-    "createdAt": "2026-08-12",
-    "updatedAt": "2026-08-12",
-    "images": [
-      "/images/products/l-demin-jean-01.jpg",
-      "/images/products/l-demin-jean-02.jpg",
-      "/images/products/l-demin-jean-03.jpg"
-    ]
-  },
-  {
     "id": "gy-black",
     "name": "GY 검정",
     "category": "jewelry",
