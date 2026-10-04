@@ -170,6 +170,7 @@ def build_head_block(page: dict, soup: BeautifulSoup) -> str:
         graph.append(
             {
                 "@type": "WebSite",
+                "creator": {"@type": "Organization", "@id": "https://web100.vn/#organization", "name": "Web100", "url": "https://web100.vn/"},
                 "name": SITE_NAME,
                 "url": BASE_URL,
             }
