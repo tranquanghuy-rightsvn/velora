@@ -265,9 +265,10 @@
     "status": "published",
     "order": 17,
     "createdAt": "2026-08-12",
-    "updatedAt": "2026-10-31T06:13:06.906Z",
+    "updatedAt": "2026-10-31T06:51:20.496Z",
     "images": [
-      "/images/products/cn-coco-01.jpg"
+      "/images/products/cn-coco-01.jpg",
+      "/images/products/cn-coco-02.jpg"
     ]
   },
   {
