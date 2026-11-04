@@ -91,9 +91,12 @@ const FOOTER_HTML = `
     </div>
   </div>
 </footer>
-<a href="https://www.instagram.com/velo.rajwlry" target="_blank" rel="noopener" class="kakao-float" aria-label="인스타그램 DM 문의">
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3C1E1E" stroke-width="1.6"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+<a href="https://www.instagram.com/velo.rajwlry" target="_blank" rel="noopener" class="insta-float" aria-label="인스타그램 DM 문의">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
   <span>DM</span>
+</a>
+<a href="https://invite.kakao.com/tc/sdve1Vz16l" target="_blank" rel="noopener" class="kakao-float" aria-label="카카오톡 문의">
+  <svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path fill="#191919" d="M12 3C6.48 3 2 6.58 2 11c0 2.86 1.88 5.37 4.7 6.78-.2.73-.74 2.66-.85 3.07-.13.5.18.5.39.36.16-.11 2.6-1.76 3.65-2.48.69.1 1.39.15 2.11.15 5.52 0 10-3.58 10-8S17.52 3 12 3z"/><text x="12" y="12.9" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="5.2" font-weight="800" letter-spacing="0.15" fill="#FEE500">TALK</text></svg>
 </a>
 `;
 

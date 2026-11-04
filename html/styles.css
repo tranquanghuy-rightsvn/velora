@@ -1002,31 +1002,52 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   white-space: nowrap;
 }
 
-/* ===== KAKAO FLOAT ===== */
-.kakao-float {
+/* ===== FLOAT CONTACT BUTTONS ===== */
+.kakao-float,
+.insta-float {
   position: fixed;
-  bottom: 28px;
   right: 20px;
   z-index: 999;
-  background: #FEE500;
   border-radius: 50%;
-  width: 52px;
-  height: 52px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 2px;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.2);
-  transition: transform 0.2s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.kakao-float:hover { transform: scale(1.08); }
-.kakao-float span {
+.kakao-float {
+  bottom: 28px;
+  width: 56px;
+  height: 56px;
+  background: #FEE500;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18), 0 1px 3px rgba(0,0,0,0.1);
+}
+.insta-float {
+  bottom: 96px;
+  width: 48px;
+  height: 48px;
+  right: 24px;
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.18);
+}
+.kakao-float:hover,
+.insta-float:hover {
+  transform: translateY(-2px) scale(1.06);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.22);
+}
+.kakao-float:focus-visible,
+.insta-float:focus-visible { outline: 2px solid #191919; outline-offset: 3px; }
+.insta-float span {
   font-size: 8px;
   font-weight: 700;
-  color: #3C1E1E;
+  color: #fff;
   letter-spacing: 0.04em;
   line-height: 1;
+}
+@media (max-width: 768px) {
+  .kakao-float { right: 16px; bottom: 20px; width: 52px; height: 52px; }
+  .insta-float { right: 18px; bottom: 82px; width: 46px; height: 46px; }
 }
 
 /* ===== RESPONSIVE ===== */
